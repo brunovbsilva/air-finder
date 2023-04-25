@@ -1,0 +1,87 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Api Layer", "1. Api Layer", "{4AC7706D-5035-4BBB-A4A6-3E32893FF5AC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Application Layer", "2. Application Layer", "{F4F51673-2674-4E72-9A42-D6FAA02CB38F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Domain Layer", "3. Domain Layer", "{50095680-09C3-4ED9-AD7F-D1E70A65EFE6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Infra Layer", "4. Infra Layer", "{3707C3E0-B3A4-4202-BDAB-EC235FFFA22A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5. Test Layer", "5. Test Layer", "{6EA1022C-6CF7-405C-A117-D41FA640B098}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirFinder.API", "AirFinder.API\AirFinder.API.csproj", "{FDF0618C-4762-4E31-AC8F-07E2B113FF76}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirFinder.Application", "AirFinder.Application\AirFinder.Application.csproj", "{AD92E6D9-72EC-4930-BE8F-9E1BDCC28FB1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirFinder.Domain", "AirFinder.Domain\AirFinder.Domain.csproj", "{AD9596BD-DA90-4D2A-95F5-5E2B506E4AD4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirFinder.Infra.IoC", "AirFinder.Infra.IoC\AirFinder.Infra.IoC.csproj", "{417B7193-2FB9-470A-8898-D5AA240FF64B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirFinder.Infra.Data", "AirFinder.Infra.Data\AirFinder.Infra.Data.csproj", "{279C712C-2C2F-4D95-9927-4DFEAB682465}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirFinder.Infra.Http", "AirFinder.Infra.Http\AirFinder.Infra.Http.csproj", "{E3F58AF4-ABC6-43CB-A94D-8D2888438BCA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirFinder.Infra.Utils", "AirFinder.Infra.Utils\AirFinder.Infra.Utils.csproj", "{97AAD020-7A41-4A87-B6EE-599BCDA3DE74}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirFinder.Unit.Tests", "AirFinder.Unit.Tests\AirFinder.Unit.Tests.csproj", "{CC63F257-8B77-44EC-834D-EE56490E436B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDF0618C-4762-4E31-AC8F-07E2B113FF76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDF0618C-4762-4E31-AC8F-07E2B113FF76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDF0618C-4762-4E31-AC8F-07E2B113FF76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDF0618C-4762-4E31-AC8F-07E2B113FF76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD92E6D9-72EC-4930-BE8F-9E1BDCC28FB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD92E6D9-72EC-4930-BE8F-9E1BDCC28FB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD92E6D9-72EC-4930-BE8F-9E1BDCC28FB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD92E6D9-72EC-4930-BE8F-9E1BDCC28FB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD9596BD-DA90-4D2A-95F5-5E2B506E4AD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD9596BD-DA90-4D2A-95F5-5E2B506E4AD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD9596BD-DA90-4D2A-95F5-5E2B506E4AD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD9596BD-DA90-4D2A-95F5-5E2B506E4AD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{417B7193-2FB9-470A-8898-D5AA240FF64B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{417B7193-2FB9-470A-8898-D5AA240FF64B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{417B7193-2FB9-470A-8898-D5AA240FF64B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{417B7193-2FB9-470A-8898-D5AA240FF64B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{279C712C-2C2F-4D95-9927-4DFEAB682465}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{279C712C-2C2F-4D95-9927-4DFEAB682465}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{279C712C-2C2F-4D95-9927-4DFEAB682465}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{279C712C-2C2F-4D95-9927-4DFEAB682465}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3F58AF4-ABC6-43CB-A94D-8D2888438BCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3F58AF4-ABC6-43CB-A94D-8D2888438BCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3F58AF4-ABC6-43CB-A94D-8D2888438BCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3F58AF4-ABC6-43CB-A94D-8D2888438BCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97AAD020-7A41-4A87-B6EE-599BCDA3DE74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97AAD020-7A41-4A87-B6EE-599BCDA3DE74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97AAD020-7A41-4A87-B6EE-599BCDA3DE74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97AAD020-7A41-4A87-B6EE-599BCDA3DE74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC63F257-8B77-44EC-834D-EE56490E436B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC63F257-8B77-44EC-834D-EE56490E436B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC63F257-8B77-44EC-834D-EE56490E436B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC63F257-8B77-44EC-834D-EE56490E436B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FDF0618C-4762-4E31-AC8F-07E2B113FF76} = {4AC7706D-5035-4BBB-A4A6-3E32893FF5AC}
+		{AD92E6D9-72EC-4930-BE8F-9E1BDCC28FB1} = {F4F51673-2674-4E72-9A42-D6FAA02CB38F}
+		{AD9596BD-DA90-4D2A-95F5-5E2B506E4AD4} = {50095680-09C3-4ED9-AD7F-D1E70A65EFE6}
+		{417B7193-2FB9-470A-8898-D5AA240FF64B} = {3707C3E0-B3A4-4202-BDAB-EC235FFFA22A}
+		{279C712C-2C2F-4D95-9927-4DFEAB682465} = {3707C3E0-B3A4-4202-BDAB-EC235FFFA22A}
+		{E3F58AF4-ABC6-43CB-A94D-8D2888438BCA} = {3707C3E0-B3A4-4202-BDAB-EC235FFFA22A}
+		{97AAD020-7A41-4A87-B6EE-599BCDA3DE74} = {3707C3E0-B3A4-4202-BDAB-EC235FFFA22A}
+		{CC63F257-8B77-44EC-834D-EE56490E436B} = {6EA1022C-6CF7-405C-A117-D41FA640B098}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9CB34662-1271-4F2E-9B11-6DB3A79E444C}
+	EndGlobalSection
+EndGlobal
