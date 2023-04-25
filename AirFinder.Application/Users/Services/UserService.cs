@@ -162,7 +162,7 @@ namespace AirFinder.Application.Users.Services
 	                <p>Prezado(a) {0},</p>
 	                <p>Recebemos sua solicitação de alteração de senha para sua conta. Para prosseguir com a alteração de senha, utilize o seguinte token de 6 dígitos:</p>
 	                <p style=""font-size: 24px; font-weight: bold;"">{1}</p>
-	                <p>Este token é válido por 30 minutos a partir do recebimento deste e-mail. Por favor, não compartilhe este token com ninguém, pois é exclusivo para você. Após a expiração do prazo de 24 horas, o token não poderá ser utilizado e você precisará solicitar um novo token de alteração de senha.</p>
+	                <p>Este token é válido por 30 minutos a partir do recebimento deste e-mail. Por favor, não compartilhe este token com ninguém, pois é exclusivo para você. Após a expiração do prazo, o token não poderá ser utilizado e você precisará solicitar um novo token de alteração de senha.</p>
 	                <p>Se você não solicitou esta alteração de senha, por favor, ignore este e-mail e entre em contato conosco imediatamente para proteger sua conta.</p>
 	                <p>Se tiver alguma dúvida ou preocupação, por favor, não hesite em nos contatar.</p>
 	                <br>
