@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AirFinder.Infra.Data.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20230423174907_phone")]
-    partial class phone
+    [Migration("20230425031629_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,12 +30,11 @@ namespace AirFinder.Infra.Data.Migrations
 
             modelBuilder.Entity("AirFinder.Domain.People.Person", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id")
+                        .HasDefaultValueSql("newid()");
 
                     b.Property<DateTime>("Birthday")
                         .HasColumnType("date")
@@ -72,19 +71,18 @@ namespace AirFinder.Infra.Data.Migrations
 
             modelBuilder.Entity("AirFinder.Domain.Tokens.TokenControl", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id")
+                        .HasDefaultValueSql("newid()");
 
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("datetime")
                         .HasColumnName("ExpirationDate");
 
-                    b.Property<int>("IdUser")
-                        .HasColumnType("int")
+                    b.Property<Guid>("IdUser")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("IdUser");
 
                     b.Property<DateTime>("SentDate")
@@ -107,15 +105,14 @@ namespace AirFinder.Infra.Data.Migrations
 
             modelBuilder.Entity("AirFinder.Domain.Users.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Id");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id")
+                        .HasDefaultValueSql("newid()");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("IdPerson")
-                        .HasColumnType("int")
+                    b.Property<Guid>("IdPerson")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("IdPerson");
 
                     b.Property<string>("Login")

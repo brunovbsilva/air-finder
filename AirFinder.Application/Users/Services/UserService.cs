@@ -75,7 +75,7 @@ namespace AirFinder.Application.Users.Services
         #endregion
 
         #region Update Password
-        public async Task<BaseResponse?> UpdatePasswordAsync(int id, UpdatePasswordRequest request)
+        public async Task<BaseResponse?> UpdatePasswordAsync(Guid id, UpdatePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByIdAsync(id);
@@ -129,7 +129,7 @@ namespace AirFinder.Application.Users.Services
         #endregion
         
         #region Delete
-        public async Task<BaseResponse?> Delete(int id)
+        public async Task<BaseResponse?> Delete(Guid id)
         => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByIdAsync(id);

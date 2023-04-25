@@ -26,13 +26,13 @@ namespace AirFinder.API.Controllers
             return Response(await _userService.CreateUserAsync(request));
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             return Response(await _userService.Delete(id));
         }
 
         [HttpPut("password/{id}")]
-        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] UpdatePasswordRequest request)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdatePasswordRequest request)
         {
             return Response(await _userService.UpdatePasswordAsync(id, request));
         }

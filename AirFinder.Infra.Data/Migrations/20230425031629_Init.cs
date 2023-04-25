@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AirFinder.Infra.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,13 +15,13 @@ namespace AirFinder.Infra.Data.Migrations
                 name: "Person",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(20)", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newid()"),
+                    Name = table.Column<string>(type: "varchar(80)", nullable: false),
                     Email = table.Column<string>(type: "varchar(80)", nullable: false),
                     Birthday = table.Column<DateTime>(type: "date", nullable: false),
                     CPF = table.Column<string>(type: "varchar(11)", nullable: false),
-                    Gender = table.Column<int>(type: "int", nullable: false)
+                    Gender = table.Column<int>(type: "int", nullable: false),
+                    Phone = table.Column<string>(type: "varchar(11)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,14 +29,29 @@ namespace AirFinder.Infra.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TokenControl",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newid()"),
+                    IdUser = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Token = table.Column<string>(type: "varchar(6)", nullable: false),
+                    Valid = table.Column<bool>(type: "bit", nullable: false),
+                    SentDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "datetime", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TokenControl", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newid()"),
                     Login = table.Column<string>(type: "varchar(20)", nullable: false),
                     Password = table.Column<string>(type: "varchar(20)", nullable: false),
-                    IdPerson = table.Column<int>(type: "int", nullable: false),
+                    IdPerson = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Roll = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -59,6 +74,9 @@ namespace AirFinder.Infra.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "TokenControl");
+
             migrationBuilder.DropTable(
                 name: "User");
 
