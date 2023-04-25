@@ -1,7 +1,7 @@
 ﻿using AirFinder.Application.Email.Services;
-using AirFinder.Application.People.Services;
 using AirFinder.Application.Users.Services;
 using AirFinder.Domain.People;
+using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Domain.Tokens;
 using AirFinder.Domain.Users;
 using AirFinder.Infra.Data;
@@ -23,8 +23,8 @@ namespace AirFinder.Infra.IoC
         public static void AddLocalServices(this IServiceCollection services, IConfiguration configuration)
         {
             #region Service
+            services.AddScoped<INotification, Notification>();
             services.AddScoped<IMailService, MailService>();
-            services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IUserService, UserService>();
             #endregion
 

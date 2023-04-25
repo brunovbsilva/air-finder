@@ -12,7 +12,7 @@ namespace AirFinder.Infra.Data.Repository
             _unitOfWork = unitOfWork;        
         }
 
-        public async Task<Person> GetByCPFAsync(string cpf)
+        public async Task<Person?> GetByCPFAsync(string cpf)
         {
             var tbPerson = _unitOfWork.Context.Set<Person>().AsNoTracking();
 
@@ -22,7 +22,7 @@ namespace AirFinder.Infra.Data.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<Person> GetByEmailAsync(string email)
+        public async Task<Person?> GetByEmailAsync(string email)
         {
             var tbPerson = _unitOfWork.Context.Set<Person>().AsNoTracking();
 

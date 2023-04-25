@@ -1,13 +1,16 @@
 ﻿using AirFinder.Application.Email.Services;
-using System.Globalization;
+using AirFinder.Domain.SeedWork.Notification;
+using SendGrid.Helpers.Errors.Model;
 
 namespace AirFinder.Application.Common
 {
     public abstract class BaseService
     {
+        protected readonly INotification _notification;
         protected readonly IMailService _mailService;
-        public BaseService(IMailService mailService) 
+        public BaseService(INotification notification, IMailService mailService) 
         {
+            _notification = notification;
             _mailService = mailService;
         }
 
@@ -17,9 +20,21 @@ namespace AirFinder.Application.Common
             {
                 return await action();
             }
-            catch (Exception ex)
+            catch (NotFoundException e)
             {
-                return default;
+                _notification.AddNotification("Not Found", e.Message, NotificationModel.ENotificationType.NotFound);
+            }
+            catch (ArgumentException e)
+            {
+                _notification.AddNotification("Invalid Property", e.Message, NotificationModel.ENotificationType.BadRequestError);
+            }
+            catch (ForbiddenException e)
+            {
+                _notification.AddNotification("Forbidden", e.Message, NotificationModel.ENotificationType.Forbidden);
+            }
+            catch (Exception e)
+            {
+                _notification.AddNotification("Internal Error", e.Message, NotificationModel.ENotificationType.InternalServerError);
             }
             return default;
         }

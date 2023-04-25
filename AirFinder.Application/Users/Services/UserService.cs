@@ -1,84 +1,53 @@
 ﻿using AirFinder.Application.Common;
 using AirFinder.Application.Email.Models.Request;
 using AirFinder.Application.Email.Services;
-using AirFinder.Application.People.Services;
 using AirFinder.Application.Users.Models.Request;
 using AirFinder.Application.Users.Models.Response;
 using AirFinder.Domain.People;
+using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Domain.Tokens;
 using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Enums;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Dynamic.Core.Tokenizer;
 
 namespace AirFinder.Application.Users.Services
 {
     public class UserService : BaseService, IUserService
     {
         readonly IUserRepository _userRepository;
-        readonly IPersonService _personService;
+        readonly IPersonRepository _personRepository;
         readonly ITokenRepository _tokenRepository;
-        public UserService(
-            IMailService mailService,
-            IUserRepository userRepository,
-            IPersonService personService,
-            ITokenRepository tokenRepository) : base(mailService)
+        public UserService(IUserRepository userRepository,
+            IPersonRepository personRepository,
+            ITokenRepository tokenRepository,
+            INotification notification,
+            IMailService mailService) : base(notification, mailService)
         {
             _userRepository = userRepository;
-            _personService = personService;
+            _personRepository = personRepository;
             _tokenRepository = tokenRepository;
         }
 
         #region Helpers
-        public async Task<List<User>> GetAll()
+        public async Task Insert(User item)
         {
-            return await _userRepository.GetAll().ToListAsync();
-        }
-
-        public async Task<User> GetByLoginAsync(string login)
-        {
-            if (string.IsNullOrEmpty(login)) throw new ArgumentNullException(nameof(login) + " invalid");
-            return await _userRepository.GetByLoginAsync(login);
-        }
-
-        public async Task<User> GetByEmailAsync(string email)
-        {
-            if (string.IsNullOrEmpty(email)) throw new ArgumentException(nameof(email) + " invalid");
-            return await _userRepository.GetByEmailAsync(email);
-        }
-
-        public async Task<User> GetByCPFAsync(string cpf)
-        {
-            if (string.IsNullOrEmpty(cpf)) throw new ArgumentException(nameof(cpf) + " invalid");
-            return await _userRepository.GetByCPFAsync(cpf);
-        }
-
-        public async Task<User> GetById(int id)
-        {
-            return await _userRepository.GetByIdAsync(id);
-        }
-
-        public async Task<User> Insert(User item)
-        {
-            if (await GetByLoginAsync(item.Login) != null) throw new ArgumentException(nameof(item.Login) + " already exists");
-            if (await _personService.GetByCPFAsync(item.Person.CPF) != null) throw new ArgumentException(nameof(item.Person.CPF) + " already exists");
-            if (await _personService.GetByEmailAsync(item.Person.Email) != null) throw new ArgumentException(nameof(item.Person.Email) + " already exists");
+            if (await _userRepository.GetByLoginAsync(item.Login) != null) throw new ArgumentException(nameof(item.Login) + " already exists.");
+            if (await _personRepository.GetByCPFAsync(item.Person.CPF) != null) throw new ArgumentException(nameof(item.Person.CPF) + " already exists.");
+            if (await _personRepository.GetByEmailAsync(item.Person.Email) != null) throw new ArgumentException(nameof(item.Person.Email) + " already exists.");
 
             await _userRepository.InsertWithSaveChangesAsync(item);
-            return await _userRepository.GetByLoginAsync(item.Login);
         }
         #endregion
+        
         #region CreateUserAsync
-        public async Task<CreateUserResponse> CreateUserAsync(UserRequest request)
+        public async Task<CreateUserResponse?> CreateUserAsync(UserRequest request)
+        => await ExecuteAsync(async () =>
         {
-            try
+            var user = new User
             {
-                var user = new User
-                {
-                    Login = request.Login,
-                    Password = request.Password,
-                    Roll = UserRoll.Default,
-                    Person = new Person(
+                Login = request.Login,
+                Password = request.Password,
+                Roll = UserRoll.Default,
+                Person = new Person(
                     request.Name,
                     request.Email,
                     request.Birthday,
@@ -86,154 +55,96 @@ namespace AirFinder.Application.Users.Services
                     request.Gender,
                     request.Phone
                 )
-                };
-
-                return await Insert(user);
-            }
-            catch(Exception ex)
-            {
-                return new CreateUserResponse
-                {
-                    Success = false,
-                    Error = ex.Message
-                };
-            }
-        }
+            };
+            await Insert(user);
+            return (CreateUserResponse)user;
+        });
         #endregion
+
         #region Login
-        public async Task<LoginResponse> Login(string login, string password)
+        public async Task<LoginResponse?> Login(string login, string password)
+        => await ExecuteAsync(async () =>
         {
-            try
+            var user = await _userRepository.GetByLoginAsync(login);
+            if (user == null || user.Password != password) throw new ArgumentException("Wrong credentials.");
+            return new LoginResponse
             {
-                var user = await _userRepository.GetByLoginAsync(login);
-                if (user == null || user.Password != password) throw new ArgumentException("Wrong credentials.");
-                return new LoginResponse
-                {
-                    User = user
-                };
-            }
-            catch(Exception ex)
-            {
-                return new LoginResponse
-                {
-                    Success = false,
-                    Error = ex.Message
-                };
-            }
-        }
+                User = user
+            };
+        });
         #endregion
+
         #region Update Password
-        public async Task<BaseResponse> UpdatePasswordAsync(int id, UpdatePasswordRequest request)
+        public async Task<BaseResponse?> UpdatePasswordAsync(int id, UpdatePasswordRequest request)
+        => await ExecuteAsync(async () =>
         {
-            try
-            {
-                var user = await _userRepository.GetByIdAsync(id);
-                if (user.Password != request.CurrentPassword) throw new ArgumentException("Current password incorrect");
-                
-                user.Password = request.NewPassword;
-                await _userRepository.UpdateWithSaveChangesAsync(user);
-                return new GenericResponse();
-            }
-            catch(Exception ex)
-            {
-                return new GenericResponse
-                {
-                    Success = false,
-                    Error = ex.Message
-                };
-            }
-        }
-        public async Task<BaseResponse> SendTokenEmail(string email)
-        {
-            try
-            {
-                var user = await _userRepository.GetByEmailAsync(email) ?? throw new ArgumentException("User not found.");
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null) throw new ArgumentException("User not found.");
+            if (user.Password != request.CurrentPassword) throw new ArgumentException("Incorrect password.");
 
-                var token = GeneratePasswordToken();
-                await _tokenRepository.InsertWithSaveChangesAsync(new TokenControl(user.Id, token, true, DateTime.Now, DateTime.Now.AddMinutes(30)));
-                await _mailService.SendEmailAsync(new MailRequest
-                {
-                    ToMail = email,
-                    Body = ForgotPasswordEmailBody(user.Person.Name, token),
-                    Subject = "Solicitação de token para alteração de senha"
-                });
-                return new GenericResponse();
-            }
-            catch(Exception ex) 
-            {
-                return new GenericResponse
-                {
-                    Success = false,
-                    Error = ex.Message
-                };
-            }
-        }
+            user.Password = request.NewPassword;
+            await _userRepository.UpdateWithSaveChangesAsync(user);
+            return new GenericResponse();
+        });
 
-        public async Task<BaseResponse> VerifyToken(VerifyTokenRequest request)
+        public async Task<BaseResponse?> SendTokenEmail(string email)
+        => await ExecuteAsync(async () =>
         {
-            try
-            {
-                var user = await _userRepository.GetByEmailAsync(request.Email) ?? throw new ArgumentException("User not found.");
-                var _token = await _tokenRepository.GetByToken(request.Token);
-                
-                if(_token == null || _token.IdUser != user.Id) throw new ArgumentException("Token inválido");
-                
-                _token.Valid = false;
-                await _tokenRepository.UpdateWithSaveChangesAsync(_token);
-                return new GenericResponse();
-            }
-            catch (Exception ex)
-            {
-                return new GenericResponse
-                {
-                    Success = false,
-                    Error = ex.Message
-                };
-            }
-        }
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null) throw new ArgumentException("User not found.");
 
-        public async Task<BaseResponse> ChangePassword(ChangePasswordRequest request)
+            var token = GeneratePasswordToken();
+            await _tokenRepository.InsertWithSaveChangesAsync(new TokenControl(user.Id, token, true, DateTime.Now, DateTime.Now.AddMinutes(30)));
+            await _mailService.SendEmailAsync(new MailRequest
+            {
+                ToMail = email,
+                Body = ForgotPasswordEmailBody(user.Person.Name, token),
+                Subject = "Solicitação de token para alteração de senha"
+            });
+            return new GenericResponse();
+        });
+
+        public async Task<BaseResponse?> VerifyToken(VerifyTokenRequest request)
+        => await ExecuteAsync(async () =>
         {
-            try
-            {
-                var user = await _userRepository.GetByEmailAsync(request.Email) ?? throw new ArgumentException("User not found.");
-                return await UpdatePasswordAsync(user.Id, new UpdatePasswordRequest { CurrentPassword = user.Password, NewPassword = request.NewPassword });
-            }
-            catch (Exception ex)
-            {
-                return new GenericResponse
-                {
-                    Success = false,
-                    Error = ex.Message
-                };
-            }
-        }
+            var user = await _userRepository.GetByEmailAsync(request.Email);
+            if (user == null) throw new ArgumentException(String.Concat("User with email", nameof(request.Email), " not found"));
+
+            var _token = await _tokenRepository.GetByToken(request.Token);
+            if (_token == null || _token.IdUser != user.Id) throw new ArgumentException("Token inválido");
+
+            _token.Valid = false;
+            await _tokenRepository.UpdateWithSaveChangesAsync(_token);
+            return new GenericResponse();
+        });
+
+        public async Task<BaseResponse?> ChangePassword(ChangePasswordRequest request)
+        => await ExecuteAsync(async () =>
+        {
+            var user = await _userRepository.GetByEmailAsync(request.Email);
+            if(user == null) throw new ArgumentException("User not found.");
+
+            return await UpdatePasswordAsync(user.Id, new UpdatePasswordRequest { CurrentPassword = user.Password, NewPassword = request.NewPassword });
+        });
         #endregion
+        
         #region Delete
-        public async Task<BaseResponse> Delete(int id)
+        public async Task<BaseResponse?> Delete(int id)
+        => await ExecuteAsync(async () =>
         {
-            try
-            {
-                var user = await _userRepository.GetByIdAsync(id);
-                if (user == null) throw new ArgumentException("user not found");
-                await _userRepository.DeleteAsync(user.Id);
-                await _personService.Delete(user.IdPerson);
-                return new GenericResponse();
-            }
-            catch (Exception ex)
-            {
-                return new GenericResponse
-                {
-                    Success = false,
-                    Error = ex.Message
-                };
-            }
-        }
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null) throw new ArgumentException("User not found.");
+
+            await _userRepository.DeleteAsync(user.Id);
+            await _personRepository.DeleteAsync(user.IdPerson);
+            return new GenericResponse();
+        });
         #endregion
+        
         #region Private Methods
         private static string GeneratePasswordToken()
         {
-            Random random = new Random();
+            Random random = new();
             int token = random.Next(0, 999999);
             return token.ToString("D6");
         }

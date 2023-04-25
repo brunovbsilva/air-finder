@@ -5,6 +5,6 @@ namespace AirFinder.Application.Users.Models.Response
 {
     public class LoginResponse : BaseResponse
     {
-        public User User { get; set; }
+        public User? User { get; set; }
     }
 }

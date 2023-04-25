@@ -37,10 +37,10 @@ namespace AirFinder.Infra.Data.Repository
                              }
                          });
 
-            return query;
+            return query.AsQueryable();
         }
 
-        public async Task<User> GetByLoginAsync(string login)
+        public async Task<User?> GetByLoginAsync(string login)
         {
             var tbPerson = _unitOfWork.Context.Set<Person>().AsNoTracking();
             var tbUser = _unitOfWork.Context.Set<User>().AsNoTracking();
@@ -70,7 +70,7 @@ namespace AirFinder.Infra.Data.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<User> GetByEmailAsync(string email)
+        public async Task<User?> GetByEmailAsync(string email)
         {
             var tbPerson = _unitOfWork.Context.Set<Person>().AsNoTracking();
             var tbUser = _unitOfWork.Context.Set<User>().AsNoTracking();
@@ -100,7 +100,7 @@ namespace AirFinder.Infra.Data.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<User> GetByCPFAsync(string cpf)
+        public async Task<User?> GetByCPFAsync(string cpf)
         {
             var tbPerson = _unitOfWork.Context.Set<Person>().AsNoTracking();
             var tbUser = _unitOfWork.Context.Set<User>().AsNoTracking();
@@ -130,7 +130,7 @@ namespace AirFinder.Infra.Data.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<User> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(int id)
         {
             var tbPerson = _unitOfWork.Context.Set<Person>().AsNoTracking();
             var tbUser = _unitOfWork.Context.Set<User>().AsNoTracking();

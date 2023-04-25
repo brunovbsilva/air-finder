@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="People\Models\" />
     <Folder Include="Users\Models\Dto\" />
   </ItemGroup>
 

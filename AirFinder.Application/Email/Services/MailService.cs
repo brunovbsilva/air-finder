@@ -1,4 +1,6 @@
-﻿using AirFinder.Application.Email.Models.Request;
+﻿using AirFinder.Application.Common;
+using AirFinder.Application.Email.Models.Request;
+using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Infra.Utils.Configuration;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -10,7 +12,7 @@ namespace AirFinder.Application.Email.Services
     public class MailService : IMailService
     {
         private readonly MailSettings _mailSettings;
-        public MailService(IOptionsSnapshot<MailSettings> mailSettings) 
+        public MailService(IOptionsSnapshot<MailSettings> mailSettings)
         {
             _mailSettings = mailSettings.Value;
         }

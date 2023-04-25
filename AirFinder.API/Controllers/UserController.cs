@@ -1,5 +1,6 @@
 ﻿using AirFinder.Application.Users.Models.Request;
 using AirFinder.Application.Users.Services;
+using AirFinder.Domain.SeedWork.Notification;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AirFinder.API.Controllers
@@ -8,7 +9,7 @@ namespace AirFinder.API.Controllers
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService) : base() 
+        public UserController(INotification notification, IUserService userService) : base(notification) 
         {
             _userService = userService;
         }

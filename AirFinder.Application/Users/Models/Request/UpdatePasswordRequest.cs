@@ -2,7 +2,7 @@
 {
     public class UpdatePasswordRequest
     {
-        public string CurrentPassword { get; set; }
-        public string NewPassword { get; set; }
+        public string CurrentPassword { get; set; } = String.Empty;
+        public string NewPassword { get; set; } = String.Empty;
     }
 }
