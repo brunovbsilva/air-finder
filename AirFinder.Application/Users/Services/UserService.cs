@@ -8,6 +8,8 @@ using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Domain.Tokens;
 using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Enums;
+using AirFinder.Infra.Security;
+using AirFinder.Infra.Security.Request;
 
 namespace AirFinder.Application.Users.Services
 {
@@ -16,15 +18,18 @@ namespace AirFinder.Application.Users.Services
         readonly IUserRepository _userRepository;
         readonly IPersonRepository _personRepository;
         readonly ITokenRepository _tokenRepository;
+        readonly IJwtService _jwtService;
         public UserService(IUserRepository userRepository,
             IPersonRepository personRepository,
             ITokenRepository tokenRepository,
+            IJwtService jwtService,
             INotification notification,
             IMailService mailService) : base(notification, mailService)
         {
             _userRepository = userRepository;
             _personRepository = personRepository;
             _tokenRepository = tokenRepository;
+            _jwtService = jwtService;
         }
 
         #region Helpers
@@ -44,12 +49,12 @@ namespace AirFinder.Application.Users.Services
         {
             var user = new User
             {
-                Login = request.Login,
+                Login = request.Login.ToLower(),
                 Password = request.Password,
                 Roll = UserRoll.Default,
                 Person = new Person(
                     request.Name,
-                    request.Email,
+                    request.Email.ToLower(),
                     request.Birthday,
                     request.CPF,
                     request.Gender,
@@ -65,11 +70,23 @@ namespace AirFinder.Application.Users.Services
         public async Task<LoginResponse?> Login(string login, string password)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByLoginAsync(login);
+            var user = await _userRepository.GetByLoginAsync(login.ToLower());
             if (user == null || user.Password != password) throw new ArgumentException("Wrong credentials.");
+
+            var tokenRequest = new CreateTokenRequest
+            {
+                Login = user.Login,
+                UserId = user.Id,
+                Name = user.Person.Name,
+                Scopes = new List<string>
+                {
+                    user.Roll == UserRoll.Admnistrator ? "Adm_Roll" : "User_Roll"
+                }
+            };
+
             return new LoginResponse
             {
-                User = user
+                Token = _jwtService.CreateToken(tokenRequest)
             };
         });
         #endregion
@@ -90,7 +107,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> SendTokenEmail(string email)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(email);
+            var user = await _userRepository.GetByEmailAsync(email.ToLower());
             if (user == null) throw new ArgumentException("User not found.");
 
             var token = GeneratePasswordToken();
@@ -107,7 +124,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> VerifyToken(VerifyTokenRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email);
+            var user = await _userRepository.GetByEmailAsync(request.Email.ToLower());
             if (user == null) throw new ArgumentException(String.Concat("User with email", nameof(request.Email), " not found"));
 
             var _token = await _tokenRepository.GetByToken(request.Token);
@@ -121,7 +138,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> ChangePassword(ChangePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email);
+            var user = await _userRepository.GetByEmailAsync(request.Email.ToLower());
             if(user == null) throw new ArgumentException("User not found.");
 
             return await UpdatePasswordAsync(user.Id, new UpdatePasswordRequest { CurrentPassword = user.Password, NewPassword = request.NewPassword });

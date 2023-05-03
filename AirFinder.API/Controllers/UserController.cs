@@ -1,6 +1,7 @@
 ﻿using AirFinder.Application.Users.Models.Request;
 using AirFinder.Application.Users.Services;
 using AirFinder.Domain.SeedWork.Notification;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AirFinder.API.Controllers
@@ -25,12 +26,15 @@ namespace AirFinder.API.Controllers
         {
             return Response(await _userService.CreateUserAsync(request));
         }
+
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             return Response(await _userService.Delete(id));
         }
 
+        [Authorize]
         [HttpPut("password/{id}")]
         public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdatePasswordRequest request)
         {

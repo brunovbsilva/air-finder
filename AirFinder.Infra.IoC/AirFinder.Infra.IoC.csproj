@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AirFinder.Application\AirFinder.Application.csproj" />
     <ProjectReference Include="..\AirFinder.Infra.Data\AirFinder.Infra.Data.csproj" />
+    <ProjectReference Include="..\AirFinder.Infra.Security\AirFinder.Infra.Security.csproj" />
     <ProjectReference Include="..\AirFinder.Infra.Utils\AirFinder.Infra.Utils.csproj" />
   </ItemGroup>
 

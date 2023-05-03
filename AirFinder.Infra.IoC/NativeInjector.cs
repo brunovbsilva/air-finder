@@ -6,6 +6,7 @@ using AirFinder.Domain.Tokens;
 using AirFinder.Domain.Users;
 using AirFinder.Infra.Data;
 using AirFinder.Infra.Data.Repository;
+using AirFinder.Infra.Security;
 using AirFinder.Infra.Utils.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,7 @@ namespace AirFinder.Infra.IoC
             services.AddScoped<INotification, Notification>();
             services.AddScoped<IMailService, MailService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IJwtService, JwtService>();
             #endregion
 
             #region Repository

@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AirFinder.Domain\AirFinder.Domain.csproj" />
+    <ProjectReference Include="..\AirFinder.Infra.Security\AirFinder.Infra.Security.csproj" />
     <ProjectReference Include="..\AirFinder.Infra.Utils\AirFinder.Infra.Utils.csproj" />
   </ItemGroup>
 
