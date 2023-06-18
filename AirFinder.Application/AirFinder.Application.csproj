@@ -15,12 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Users\Models\Dto\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AirFinder.Domain\AirFinder.Domain.csproj" />
-    <ProjectReference Include="..\AirFinder.Infra.Utils\AirFinder.Infra.Utils.csproj" />
+    <ProjectReference Include="..\AirFinder.Infra.Data\AirFinder.Infra.Data.csproj" />
+    <ProjectReference Include="..\AirFinder.Infra.Http\AirFinder.Infra.Http.csproj" />
+    <ProjectReference Include="..\AirFinder.Infra.Security\AirFinder.Infra.Security.csproj" />
   </ItemGroup>
 
 </Project>

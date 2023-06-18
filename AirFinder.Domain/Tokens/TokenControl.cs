@@ -1,9 +1,11 @@
-﻿namespace AirFinder.Domain.Tokens
+﻿using AirFinder.Domain.Common;
+
+namespace AirFinder.Domain.Tokens
 {
     public class TokenControl : BaseModel
     {
         public TokenControl() { }
-        public TokenControl(Guid idUser, string token, bool valid, DateTime sentDate, DateTime? expirationDate)
+        public TokenControl(Guid idUser, string token, bool valid, long sentDate, long? expirationDate)
         {
             IdUser = idUser;
             Token = token;
@@ -15,8 +17,8 @@
         public Guid IdUser { get; set; }
         public string Token { get; set; }
         public bool Valid { get; set; }
-        public DateTime SentDate { get; set; }
-        public DateTime? ExpirationDate { get; set; }
+        public long SentDate { get; set; }
+        public long? ExpirationDate { get; set; }
 
     }
 }

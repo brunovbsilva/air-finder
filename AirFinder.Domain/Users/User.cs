@@ -1,5 +1,6 @@
 ﻿using AirFinder.Domain.Users.Enums;
 using AirFinder.Domain.People;
+using AirFinder.Domain.Common;
 
 namespace AirFinder.Domain.Users
 {
@@ -11,13 +12,14 @@ namespace AirFinder.Domain.Users
             Password = password;
             IdPerson = idPerson;
             Roll = roll;
+            Person = null;
         }
         public User() {}
         public string Login { get; set; } = String.Empty;
         public string Password { get; set; } = String.Empty;
         public Guid IdPerson { get; set; } = new Guid();
         public UserRoll Roll { get; set; }
-        public virtual Person Person { get; set; } = new Person();
+        public virtual Person? Person { get; set; } = null;
 
     }
 }

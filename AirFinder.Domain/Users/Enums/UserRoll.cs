@@ -2,7 +2,8 @@
 {
     public enum UserRoll
     {
-        Admnistrator = 1,
+        Admnistrator = 0,
+        ContentCreator = 1,
         Default = 2
     }
 }

@@ -10,6 +10,8 @@ namespace AirFinder.Infra.Data
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(PersonConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(TokenControlConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(BattleGroundConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(GameConfiguration).Assembly);
         }
     }
 }

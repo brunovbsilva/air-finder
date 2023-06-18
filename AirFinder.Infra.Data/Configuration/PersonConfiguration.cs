@@ -8,7 +8,7 @@ namespace AirFinder.Infra.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Person> builder)
         {
-            builder.ToTable("Person");
+            builder.ToTable("People");
 
             builder.HasKey(e => e.Id);
             builder.Property(e => e.Id).HasColumnName("Id").HasColumnType("uniqueidentifier").HasDefaultValueSql("newid()").IsRequired();

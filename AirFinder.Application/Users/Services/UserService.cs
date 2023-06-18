@@ -1,13 +1,15 @@
-﻿using AirFinder.Application.Common;
-using AirFinder.Application.Email.Models.Request;
+﻿using AirFinder.Domain.Email.Models.Requests;
 using AirFinder.Application.Email.Services;
-using AirFinder.Application.Users.Models.Request;
-using AirFinder.Application.Users.Models.Response;
+using AirFinder.Domain.Common;
 using AirFinder.Domain.People;
 using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Domain.Tokens;
 using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Enums;
+using AirFinder.Domain.Users.Models.Requests;
+using AirFinder.Domain.Users.Models.Responses;
+using AirFinder.Infra.Security;
+using AirFinder.Infra.Security.Request;
 
 namespace AirFinder.Application.Users.Services
 {
@@ -16,22 +18,25 @@ namespace AirFinder.Application.Users.Services
         readonly IUserRepository _userRepository;
         readonly IPersonRepository _personRepository;
         readonly ITokenRepository _tokenRepository;
+        readonly IJwtService _jwtService;
         public UserService(IUserRepository userRepository,
             IPersonRepository personRepository,
             ITokenRepository tokenRepository,
+            IJwtService jwtService,
             INotification notification,
             IMailService mailService) : base(notification, mailService)
         {
             _userRepository = userRepository;
             _personRepository = personRepository;
             _tokenRepository = tokenRepository;
+            _jwtService = jwtService;
         }
 
         #region Helpers
-        public async Task Insert(User item)
+        private async Task Insert(User item)
         {
             if (await _userRepository.GetByLoginAsync(item.Login) != null) throw new ArgumentException(nameof(item.Login) + " already exists.");
-            if (await _personRepository.GetByCPFAsync(item.Person.CPF) != null) throw new ArgumentException(nameof(item.Person.CPF) + " already exists.");
+            if (await _personRepository.GetByCPFAsync(item.Person!.CPF) != null) throw new ArgumentException(nameof(item.Person.CPF) + " already exists.");
             if (await _personRepository.GetByEmailAsync(item.Person.Email) != null) throw new ArgumentException(nameof(item.Person.Email) + " already exists.");
 
             await _userRepository.InsertWithSaveChangesAsync(item);
@@ -44,12 +49,12 @@ namespace AirFinder.Application.Users.Services
         {
             var user = new User
             {
-                Login = request.Login,
+                Login = request.Login.ToLower(),
                 Password = request.Password,
                 Roll = UserRoll.Default,
                 Person = new Person(
                     request.Name,
-                    request.Email,
+                    request.Email.ToLower(),
                     request.Birthday,
                     request.CPF,
                     request.Gender,
@@ -61,15 +66,46 @@ namespace AirFinder.Application.Users.Services
         });
         #endregion
 
+        #region CreateAnotherUserAsync
+        public async Task<BaseResponse?> CreateAnotherUserAsync(CreateAnotherUserRequest request, Guid userId)
+        => await ExecuteAsync(async () =>
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if(user == null) throw new ArgumentException("User not found");
+            var newUser = new User
+            {
+                Login = request.Login.ToLower(),
+                Password = request.Password,
+                Roll = request.Role < user.Roll ? user.Roll : request.Role,
+                IdPerson = user.IdPerson,
+                Person = null
+            };
+            await _userRepository.InsertWithSaveChangesAsync(newUser);
+            return new GenericResponse();
+        });
+        #endregion
+
         #region Login
         public async Task<LoginResponse?> Login(string login, string password)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByLoginAsync(login);
+            var user = await _userRepository.GetByLoginAsync(login.ToLower());
             if (user == null || user.Password != password) throw new ArgumentException("Wrong credentials.");
+
+            var tokenRequest = new CreateTokenRequest
+            {
+                Login = user.Login,
+                UserId = user.Id,
+                Name = user.Person!.Name,
+                Scopes = new List<string>
+                {
+                    user.Roll == UserRoll.Admnistrator ? "Adm_Roll" : "User_Roll"
+                }
+            };
+
             return new LoginResponse
             {
-                User = user
+                Token = _jwtService.CreateToken(tokenRequest)
             };
         });
         #endregion
@@ -90,15 +126,15 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> SendTokenEmail(string email)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(email);
+            var user = await _userRepository.GetByEmailAsync(email.ToLower());
             if (user == null) throw new ArgumentException("User not found.");
 
             var token = GeneratePasswordToken();
-            await _tokenRepository.InsertWithSaveChangesAsync(new TokenControl(user.Id, token, true, DateTime.Now, DateTime.Now.AddMinutes(30)));
+            await _tokenRepository.InsertWithSaveChangesAsync(new TokenControl(user.Id, token, true, DateTime.Now.Ticks, DateTime.Now.AddMinutes(30).Ticks));
             await _mailService.SendEmailAsync(new MailRequest
             {
                 ToMail = email,
-                Body = ForgotPasswordEmailBody(user.Person.Name, token),
+                Body = ForgotPasswordEmailBody(user.Person!.Name, token),
                 Subject = "Solicitação de token para alteração de senha"
             });
             return new GenericResponse();
@@ -107,7 +143,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> VerifyToken(VerifyTokenRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email);
+            var user = await _userRepository.GetByEmailAsync(request.Email.ToLower());
             if (user == null) throw new ArgumentException(String.Concat("User with email", nameof(request.Email), " not found"));
 
             var _token = await _tokenRepository.GetByToken(request.Token);
@@ -121,7 +157,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> ChangePassword(ChangePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email);
+            var user = await _userRepository.GetByEmailAsync(request.Email.ToLower());
             if(user == null) throw new ArgumentException("User not found.");
 
             return await UpdatePasswordAsync(user.Id, new UpdatePasswordRequest { CurrentPassword = user.Password, NewPassword = request.NewPassword });
