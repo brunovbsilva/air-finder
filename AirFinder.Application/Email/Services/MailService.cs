@@ -1,6 +1,4 @@
-﻿using AirFinder.Application.Common;
-using AirFinder.Application.Email.Models.Request;
-using AirFinder.Domain.SeedWork.Notification;
+﻿using AirFinder.Domain.Email.Models.Requests;
 using AirFinder.Infra.Utils.Configuration;
 using MailKit.Net.Smtp;
 using MailKit.Security;

@@ -17,7 +17,7 @@ namespace AirFinder.Infra.Data.Repository
 
             var query = (from p in tbToken.DefaultIfEmpty()
                          where (p.Token == token && !string.IsNullOrEmpty(token) &&
-                            p.Valid == true && (p.ExpirationDate == null || p.ExpirationDate >= DateTime.Now))
+                            p.Valid == true && (p.ExpirationDate == null || p.ExpirationDate >= DateTime.Now.Ticks))
                          select p);
             return await query.OrderBy(x => x.Id).LastOrDefaultAsync();
         }

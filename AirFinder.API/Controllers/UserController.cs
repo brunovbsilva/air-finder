@@ -1,6 +1,6 @@
-﻿using AirFinder.Application.Users.Models.Request;
-using AirFinder.Application.Users.Services;
+﻿using AirFinder.Application.Users.Services;
 using AirFinder.Domain.SeedWork.Notification;
+using AirFinder.Domain.Users.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,20 +20,23 @@ namespace AirFinder.API.Controllers
         {
             return Response(await _userService.Login(login, password));
         }
-
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserRequest request)
         {
             return Response(await _userService.CreateUserAsync(request));
         }
-
+        [Authorize]
+        [HttpPost("another")]
+        public async Task<IActionResult> CreateAnotherUser([FromBody] CreateAnotherUserRequest request)
+        {
+            return Response(await _userService.CreateAnotherUserAsync(request, GetUserId(HttpContext)));
+        }
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             return Response(await _userService.Delete(id));
         }
-
         [Authorize]
         [HttpPut("password/{id}")]
         public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdatePasswordRequest request)

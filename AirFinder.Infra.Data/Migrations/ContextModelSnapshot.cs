@@ -25,6 +25,155 @@ namespace AirFinder.Infra.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AirFinder.Domain.BattleGrounds.BattleGround", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id")
+                        .HasDefaultValueSql("newid()");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("varchar(150)")
+                        .HasColumnName("Address");
+
+                    b.Property<string>("CEP")
+                        .IsRequired()
+                        .HasColumnType("varchar(8)")
+                        .HasColumnName("CEP");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("City");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("Country");
+
+                    b.Property<Guid>("IdCreator")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("IdCreator");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("varchar(max)")
+                        .HasColumnName("ImageUrl");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int")
+                        .HasColumnName("Number");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("State");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCreator");
+
+                    b.ToTable("BattleGrounds", (string)null);
+                });
+
+            modelBuilder.Entity("AirFinder.Domain.GameLogs.GameLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id")
+                        .HasDefaultValueSql("newid()");
+
+                    b.Property<long>("CreationDate")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CreationDate");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("Description");
+
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("GameId");
+
+                    b.Property<long?>("LastUpdateDate")
+                        .HasColumnType("bigint")
+                        .HasColumnName("LastUpdateDate");
+
+                    b.Property<Guid?>("LastUpdateUserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastUpdateUserId");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("Status");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("LastUpdateUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GameLogs", (string)null);
+                });
+
+            modelBuilder.Entity("AirFinder.Domain.Games.Game", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id")
+                        .HasDefaultValueSql("newid()");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("varchar(max)")
+                        .HasColumnName("Description");
+
+                    b.Property<Guid>("IdBattleGround")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("IdBattleGround");
+
+                    b.Property<Guid>("IdCreator")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("IdCreator");
+
+                    b.Property<long>("MillisDate")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Date");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("Status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdBattleGround");
+
+                    b.HasIndex("IdCreator");
+
+                    b.ToTable("Games", (string)null);
+                });
+
             modelBuilder.Entity("AirFinder.Domain.People.Person", b =>
                 {
                     b.Property<Guid>("Id")
@@ -63,7 +212,7 @@ namespace AirFinder.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Person", (string)null);
+                    b.ToTable("People", (string)null);
                 });
 
             modelBuilder.Entity("AirFinder.Domain.Tokens.TokenControl", b =>
@@ -74,16 +223,16 @@ namespace AirFinder.Infra.Data.Migrations
                         .HasColumnName("Id")
                         .HasDefaultValueSql("newid()");
 
-                    b.Property<DateTime?>("ExpirationDate")
-                        .HasColumnType("datetime")
+                    b.Property<long?>("ExpirationDate")
+                        .HasColumnType("bigint")
                         .HasColumnName("ExpirationDate");
 
                     b.Property<Guid>("IdUser")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("IdUser");
 
-                    b.Property<DateTime>("SentDate")
-                        .HasColumnType("datetime")
+                    b.Property<long>("SentDate")
+                        .HasColumnType("bigint")
                         .HasColumnName("SentDate");
 
                     b.Property<string>("Token")
@@ -130,7 +279,63 @@ namespace AirFinder.Infra.Data.Migrations
 
                     b.HasIndex("IdPerson");
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("AirFinder.Domain.BattleGrounds.BattleGround", b =>
+                {
+                    b.HasOne("AirFinder.Domain.Users.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("IdCreator")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("AirFinder.Domain.GameLogs.GameLog", b =>
+                {
+                    b.HasOne("AirFinder.Domain.Games.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AirFinder.Domain.Users.User", "LastUpdateUser")
+                        .WithMany()
+                        .HasForeignKey("LastUpdateUserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("AirFinder.Domain.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("LastUpdateUser");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AirFinder.Domain.Games.Game", b =>
+                {
+                    b.HasOne("AirFinder.Domain.BattleGrounds.BattleGround", "BattleGroud")
+                        .WithMany()
+                        .HasForeignKey("IdBattleGround")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AirFinder.Domain.Users.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("IdCreator")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BattleGroud");
+
+                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("AirFinder.Domain.Users.User", b =>

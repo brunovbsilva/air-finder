@@ -1,4 +1,5 @@
-﻿using AirFinder.Domain.People.Enums;
+﻿using AirFinder.Domain.Common;
+using AirFinder.Domain.People.Enums;
 
 namespace AirFinder.Domain.People
 {

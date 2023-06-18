@@ -16,8 +16,8 @@ namespace AirFinder.Infra.Data.Configuration
             builder.Property(e => e.IdUser).HasColumnName("IdUser").HasColumnType("uniqueidentifier").IsRequired();
             builder.Property(e => e.Token).HasColumnName("Token").HasColumnType("varchar(6)").IsRequired();
             builder.Property(e => e.Valid).HasColumnName("Valid").HasColumnType("bit").IsRequired();
-            builder.Property(e => e.SentDate).HasColumnName("SentDate").HasColumnType("datetime").IsRequired();
-            builder.Property(e => e.ExpirationDate).HasColumnName("ExpirationDate").HasColumnType("datetime");
+            builder.Property(e => e.SentDate).HasColumnName("SentDate").HasColumnType("bigint").IsRequired();
+            builder.Property(e => e.ExpirationDate).HasColumnName("ExpirationDate").HasColumnType("bigint");
         }
     }
 }
