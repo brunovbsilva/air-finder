@@ -13,7 +13,7 @@ namespace AirFinder.Application.Games.Services
         Task<BaseResponse?> DeleteGame(Guid id, Guid userId);
         Task<BaseResponse?> JoinGame(Guid gameId, Guid userId);
         Task<BaseResponse?> LeaveGame(Guid gameId, Guid userId);
-        Task<BaseResponse?> PayGame(PayGameRequest request, Guid userId);
+        Task<BaseResponse?> PayGame(Guid gameId, Guid userId);
         Task<BaseResponse?> ValidateGameJoin(ValidateGameJoinRequest request, Guid userId);
     }
 }

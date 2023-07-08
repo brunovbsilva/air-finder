@@ -127,11 +127,8 @@ namespace AirFinder.Infra.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newid()"),
                     GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreationDate = table.Column<long>(type: "bigint", nullable: false),
-                    LastUpdateDate = table.Column<long>(type: "bigint", nullable: true),
-                    LastUpdateUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "varchar(80)", nullable: false)
+                    JoinDate = table.Column<long>(type: "bigint", nullable: false),
+                    PaymentDate = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -142,11 +139,6 @@ namespace AirFinder.Infra.Data.Migrations
                         principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GameLogs_Users_LastUpdateUserId",
-                        column: x => x.LastUpdateUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_GameLogs_Users_UserId",
                         column: x => x.UserId,
@@ -163,11 +155,6 @@ namespace AirFinder.Infra.Data.Migrations
                 name: "IX_GameLogs_GameId",
                 table: "GameLogs",
                 column: "GameId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GameLogs_LastUpdateUserId",
-                table: "GameLogs",
-                column: "LastUpdateUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GameLogs_UserId",

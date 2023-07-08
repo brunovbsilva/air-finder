@@ -30,8 +30,8 @@ namespace AirFinder.API.Controllers
         public async Task<IActionResult> JoinGame([FromRoute] Guid id) { return Response(await _gameService.JoinGame(id, GetUserId(HttpContext))); }
         [HttpDelete("leave/{id}")]
         public async Task<IActionResult> LeaveGame([FromRoute] Guid id) { return Response(await _gameService.LeaveGame(id, GetUserId(HttpContext))); }
-        [HttpPost("pay")]
-        public async Task<IActionResult> PayGame([FromBody] PayGameRequest request) { return Response(await _gameService.PayGame(request, GetUserId(HttpContext))); }
+        [HttpPost("pay/{id}")]
+        public async Task<IActionResult> PayGame([FromRoute] Guid id) { return Response(await _gameService.PayGame(id, GetUserId(HttpContext))); }
         [HttpPost("validate")]
         public async Task<IActionResult> ValidateGameJoin([FromBody] ValidateGameJoinRequest request) { return Response(await _gameService.ValidateGameJoin(request, GetUserId(HttpContext))); }
     }

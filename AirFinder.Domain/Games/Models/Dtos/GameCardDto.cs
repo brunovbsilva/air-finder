@@ -1,5 +1,4 @@
-﻿using AirFinder.Domain.GameLogs.Enums;
-using AirFinder.Domain.Games.Models.Enums;
+﻿using AirFinder.Domain.Games.Models.Enums;
 
 namespace AirFinder.Domain.Games.Models.Dtos
 {
@@ -15,6 +14,7 @@ namespace AirFinder.Domain.Games.Models.Dtos
         public string? ImageUrl { get; set; } = String.Empty;
         public bool Verified { get; set; } = false;
         public bool CanDelete { get; set; } = false;
+        public GamePaymentStatus GameStatus { get; set; } = GamePaymentStatus.NotJoined;
         public GameCardDto() { }
     }
 }

@@ -38,6 +38,5 @@ namespace AirFinder.Application
             }
             return default;
         }
-
     }
 }

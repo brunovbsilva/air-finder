@@ -1,6 +1,5 @@
 ﻿using AirFinder.Domain.BattleGrounds;
 using AirFinder.Domain.GameLogs;
-using AirFinder.Domain.GameLogs.Enums;
 using AirFinder.Domain.Games;
 using AirFinder.Domain.Games.Models.Dtos;
 using AirFinder.Domain.Games.Models.Enums;
@@ -9,7 +8,6 @@ using AirFinder.Domain.Games.Models.Responses;
 using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Enums;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace AirFinder.Infra.Data.Repository
 {
@@ -26,12 +24,14 @@ namespace AirFinder.Infra.Data.Repository
             var tbGame = _unitOfWork.Context.Set<Game>().AsNoTracking();
             var tbBG = _unitOfWork.Context.Set<BattleGround>().AsNoTracking();
             var tbUser = _unitOfWork.Context.Set<User>().AsNoTracking();
+            var tbGameLog = _unitOfWork.Context.Set<GameLog>().AsNoTracking();
             var ticksNow = DateTime.Now.Ticks;
 
             var query = (
                 from g in tbGame
                 join bg in tbBG on g.IdBattleGround equals bg.Id into BGs from bgd in BGs.DefaultIfEmpty()
                 join u in tbUser on g.IdCreator equals u.Id into Us from usd in Us.DefaultIfEmpty()
+                join gl in tbGameLog on g.Id equals gl.GameId into GLs from gld in GLs.DefaultIfEmpty()
 
                 select new GameCardDto()
                 {
@@ -44,7 +44,8 @@ namespace AirFinder.Infra.Data.Repository
                     MaxPlayers = g.MaxPlayers,
                     ImageUrl = bgd.ImageUrl,
                     Verified = usd.Roll == UserRoll.Admnistrator || usd.Roll == UserRoll.ContentCreator,
-                    CanDelete = g.IdCreator == userId
+                    CanDelete = g.IdCreator == userId,
+                    GameStatus = gld.PaymentDate != null ? GamePaymentStatus.Paid : gld.JoinDate != null ? GamePaymentStatus.Joined : GamePaymentStatus.NotJoined
                 })
                 .Where(x =>
                     (request.GameStatus == GameStatus.Created && x.DateFrom > ticksNow) ||
