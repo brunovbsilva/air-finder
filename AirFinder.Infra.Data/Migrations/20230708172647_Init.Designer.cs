@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AirFinder.Infra.Data.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20230616020614_Init")]
+    [Migration("20230708172647_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -155,9 +155,17 @@ namespace AirFinder.Infra.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("IdCreator");
 
-                    b.Property<long>("MillisDate")
+                    b.Property<int>("MaxPlayers")
+                        .HasColumnType("int")
+                        .HasColumnName("MaxPlayers");
+
+                    b.Property<long>("MillisDateFrom")
                         .HasColumnType("bigint")
-                        .HasColumnName("Date");
+                        .HasColumnName("DateFrom");
+
+                    b.Property<long>("MillisDateUpTo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("DateUpTo");
 
                     b.Property<string>("Name")
                         .IsRequired()

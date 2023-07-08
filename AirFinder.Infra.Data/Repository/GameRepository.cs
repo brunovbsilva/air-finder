@@ -4,6 +4,7 @@ using AirFinder.Domain.GameLogs.Enums;
 using AirFinder.Domain.Games;
 using AirFinder.Domain.Games.Models.Dtos;
 using AirFinder.Domain.Games.Models.Enums;
+using AirFinder.Domain.Games.Models.Requests;
 using AirFinder.Domain.Games.Models.Responses;
 using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Enums;
@@ -20,18 +21,17 @@ namespace AirFinder.Infra.Data.Repository
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ListGamesResponse> getGameList(int currentPage, int itemsPerPage, List<GameLogStatus>? joinStatusList, List<GameStatus>? gameStatusList, long? fromDate, long? upToDate, Guid userId)
+        public async Task<ListGamesResponse> getGameList(ListGamesRequest request, Guid userId)
         {
             var tbGame = _unitOfWork.Context.Set<Game>().AsNoTracking();
             var tbBG = _unitOfWork.Context.Set<BattleGround>().AsNoTracking();
             var tbUser = _unitOfWork.Context.Set<User>().AsNoTracking();
-            var tbLogs = _unitOfWork.Context.Set<GameLog>().AsNoTracking();
+            var ticksNow = DateTime.Now.Ticks;
 
             var query = (
                 from g in tbGame
                 join bg in tbBG on g.IdBattleGround equals bg.Id into BGs from bgd in BGs.DefaultIfEmpty()
                 join u in tbUser on g.IdCreator equals u.Id into Us from usd in Us.DefaultIfEmpty()
-                join l in tbLogs on g.Id equals l.GameId into Ls from lsd in Ls.DefaultIfEmpty()
 
                 select new GameCardDto()
                 {
@@ -39,36 +39,36 @@ namespace AirFinder.Infra.Data.Repository
                     CreatorId = g.IdCreator,
                     Name = g.Name,
                     Local = $"{bgd.City}, {bgd.State}",
-                    Date = g.MillisDate,
+                    DateFrom = g.MillisDateFrom,
+                    DateUpTo = g.MillisDateUpTo,
+                    MaxPlayers = g.MaxPlayers,
                     ImageUrl = bgd.ImageUrl,
                     Verified = usd.Roll == UserRoll.Admnistrator || usd.Roll == UserRoll.ContentCreator,
-                    CanDelete = g.IdCreator == userId,
-                    JoinStatus = lsd != null && lsd.UserId == userId ? lsd.Status : GameLogStatus.None,
-                    GameStatus = g.Status
+                    CanDelete = g.IdCreator == userId
                 })
                 .Where(x =>
-                    (x.CreatorId == userId && x.GameStatus == GameStatus.Finished && gameStatusList != null && gameStatusList.Contains(GameStatus.Finished)) ||
-                    ((joinStatusList == null || joinStatusList.Contains(x.JoinStatus)) &&
-                    (gameStatusList == null || gameStatusList.Contains(x.GameStatus)) &&
-                    (fromDate == null || x.Date >= fromDate) &&
-                    (upToDate == null || x.Date <= upToDate))
-                ).OrderBy(x => x.Date);
+                    (request.GameStatus == GameStatus.Created && x.DateFrom > ticksNow) ||
+                    (request.GameStatus == GameStatus.Started && x.DateFrom < ticksNow && x.DateUpTo > ticksNow) ||
+                    (request.GameStatus == GameStatus.Finished && x.DateUpTo < ticksNow) ||
+                    (request.GameStatus == GameStatus.All)
+                )
+                .OrderBy(x => x.DateFrom);
 
             int totalItems = await query.CountAsync();
-            int totalPages = (int)Math.Ceiling((double)totalItems / itemsPerPage);
-            if(currentPage >= totalPages) currentPage = totalPages-1;
-            if(currentPage < 0) currentPage = 0;
+            int totalPages = (int)Math.Ceiling((double)totalItems / request.ItemsPerPage);
+            if(request.PageIndex >= totalPages) request.PageIndex = totalPages-1;
+            if(request.PageIndex < 0) request.PageIndex = 0;
 
             var gameList = await query
-                .Skip(itemsPerPage * (currentPage))
-                .Take(itemsPerPage)
+                .Skip(request.ItemsPerPage * (request.PageIndex))
+                .Take(request.ItemsPerPage)
                 .ToListAsync();
 
             return new ListGamesResponse
             {
                 Games = gameList,
                 Length = totalItems,
-                PageIndex = currentPage
+                PageIndex = request.PageIndex,
             };
         }
     }

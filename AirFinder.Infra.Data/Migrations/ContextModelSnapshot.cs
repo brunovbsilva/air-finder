@@ -152,18 +152,22 @@ namespace AirFinder.Infra.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("IdCreator");
 
-                    b.Property<long>("MillisDate")
+                    b.Property<int>("MaxPlayers")
+                        .HasColumnType("int")
+                        .HasColumnName("MaxPlayers");
+
+                    b.Property<long>("MillisDateFrom")
                         .HasColumnType("bigint")
-                        .HasColumnName("Date");
+                        .HasColumnName("DateFrom");
+
+                    b.Property<long>("MillisDateUpTo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("DateUpTo");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(80)")
                         .HasColumnName("Name");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
 
                     b.HasKey("Id");
 

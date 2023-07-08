@@ -97,7 +97,9 @@ namespace AirFinder.Infra.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newid()"),
                     Name = table.Column<string>(type: "varchar(80)", nullable: false),
                     Description = table.Column<string>(type: "varchar(max)", nullable: false),
-                    Date = table.Column<long>(type: "bigint", nullable: false),
+                    DateFrom = table.Column<long>(type: "bigint", nullable: false),
+                    DateUpTo = table.Column<long>(type: "bigint", nullable: false),
+                    MaxPlayers = table.Column<int>(type: "int", nullable: false),
                     IdBattleGround = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdCreator = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
