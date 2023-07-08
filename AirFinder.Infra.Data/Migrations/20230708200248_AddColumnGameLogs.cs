@@ -5,25 +5,24 @@
 namespace AirFinder.Infra.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddGameStatus : Migration
+    public partial class AddColumnGameLogs : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "Status",
-                table: "Games",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+            migrationBuilder.AddColumn<long>(
+                name: "ValidateDate",
+                table: "GameLogs",
+                type: "bigint",
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Status",
-                table: "Games");
+                name: "ValidateDate",
+                table: "GameLogs");
         }
     }
 }

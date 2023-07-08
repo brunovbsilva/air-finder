@@ -91,40 +91,29 @@ namespace AirFinder.Infra.Data.Migrations
                         .HasColumnName("Id")
                         .HasDefaultValueSql("newid()");
 
-                    b.Property<long>("CreationDate")
-                        .HasColumnType("bigint")
-                        .HasColumnName("CreationDate");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("varchar(80)")
-                        .HasColumnName("Description");
-
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("GameId");
 
-                    b.Property<long?>("LastUpdateDate")
+                    b.Property<long>("JoinDate")
                         .HasColumnType("bigint")
-                        .HasColumnName("LastUpdateDate");
+                        .HasColumnName("JoinDate");
 
-                    b.Property<Guid?>("LastUpdateUserId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastUpdateUserId");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<long?>("PaymentDate")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PaymentDate");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("UserId");
 
+                    b.Property<long?>("ValidateDate")
+                        .HasColumnType("bigint")
+                        .HasColumnName("ValidateDate");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GameId");
-
-                    b.HasIndex("LastUpdateUserId");
 
                     b.HasIndex("UserId");
 
@@ -152,18 +141,22 @@ namespace AirFinder.Infra.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("IdCreator");
 
-                    b.Property<long>("MillisDate")
+                    b.Property<int>("MaxPlayers")
+                        .HasColumnType("int")
+                        .HasColumnName("MaxPlayers");
+
+                    b.Property<long>("MillisDateFrom")
                         .HasColumnType("bigint")
-                        .HasColumnName("Date");
+                        .HasColumnName("DateFrom");
+
+                    b.Property<long>("MillisDateUpTo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("DateUpTo");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(80)")
                         .HasColumnName("Name");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
 
                     b.HasKey("Id");
 
@@ -301,11 +294,6 @@ namespace AirFinder.Infra.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AirFinder.Domain.Users.User", "LastUpdateUser")
-                        .WithMany()
-                        .HasForeignKey("LastUpdateUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("AirFinder.Domain.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -313,8 +301,6 @@ namespace AirFinder.Infra.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Game");
-
-                    b.Navigation("LastUpdateUser");
 
                     b.Navigation("User");
                 });

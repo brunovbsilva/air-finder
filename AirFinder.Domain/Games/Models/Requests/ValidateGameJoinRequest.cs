@@ -2,7 +2,7 @@
 {
     public class ValidateGameJoinRequest
     {
-        public Guid IdGameLog { get; set; }
+        public Guid GameId { get; set; }
         public Guid UserId { get; set; }
     }
 }

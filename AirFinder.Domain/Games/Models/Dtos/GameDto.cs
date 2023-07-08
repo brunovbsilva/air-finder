@@ -7,7 +7,9 @@ namespace AirFinder.Domain.Games.Models.Dtos
     {
         public string Name { get; set; } = String.Empty;
         public string Description { get; set; } = String.Empty;
-        public long Date { get; set; }
+        public long DateFrom { get; set; } = 0;
+        public long DateUpTo { get; set; } = 0;
+        public int MaxPlayers { get; set; } = 0;
         public Guid IdCreator { get; set; }
         public BattleGroundDto? BattleGround { get; set; }
 
@@ -19,7 +21,9 @@ namespace AirFinder.Domain.Games.Models.Dtos
                 Id = game.Id,
                 Name = game.Name,
                 Description = game.Description,
-                Date = game.MillisDate,
+                DateFrom = game.MillisDateFrom,
+                DateUpTo = game.MillisDateUpTo,
+                MaxPlayers = game.MaxPlayers,
                 IdCreator = game.IdCreator,
                 BattleGround = (BattleGroundDto)game.BattleGroud!
             };
