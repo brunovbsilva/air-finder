@@ -50,7 +50,7 @@ namespace AirFinder.API.Controllers
             var token = http.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             var handler = new JwtSecurityTokenHandler();
             var jsonToken = handler.ReadJwtToken(token);
-            Guid.TryParse(jsonToken.Claims.FirstOrDefault(x => x.Type == "userId").Value, out Guid result);
+            Guid.TryParse(jsonToken.Claims.FirstOrDefault(x => x.Type == "userId")!.Value, out Guid result);
             return result;
         }
     }

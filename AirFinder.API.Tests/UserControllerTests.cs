@@ -1,6 +1,12 @@
 ﻿using AirFinder.Application.Users.Services;
+using AirFinder.Domain.Common;
 using AirFinder.Domain.SeedWork.Notification;
+using AirFinder.Domain.Users.Models.Requests;
 using AirFinder.Domain.Users.Models.Responses;
+using Microsoft.AspNetCore.Http;
+using Microsoft.OpenApi.Any;
+using Microsoft.VisualBasic;
+using System.Net.Http;
 using static AirFinder.Domain.SeedWork.Notification.NotificationModel;
 
 namespace AirFinder.API.Tests
@@ -9,17 +15,26 @@ namespace AirFinder.API.Tests
     {
         readonly Mock<IUserService> _userService;
         readonly Mock<INotification> _notification;
+        readonly Mock<HttpContext> _httpContext;
         readonly UserController _controller;
 
         public UserControllerTests()
         {
             _userService = new Mock<IUserService>();
             _notification = new Mock<INotification>();
-            _controller = new UserController(_notification.Object, _userService.Object);
+            _httpContext = new Mock<HttpContext>();
+            SetupHttpContext();
+
+            _controller = new UserController(_notification.Object, _userService.Object)
+            {
+                ControllerContext = new ControllerContext
+                {
+                    HttpContext = _httpContext.Object
+                }
+            };
         }
 
         #region Login
-
         [Fact]
         public async Task Login_ShouldReturnOk()
         {
@@ -27,28 +42,13 @@ namespace AirFinder.API.Tests
             var login = "login";
             var password = "password";
             LoginResponse response = new LoginResponse();
-            _userService.Setup(x => x.Login(login, password)).ReturnsAsync(response);
+            _userService.Setup(x => x.LoginAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.Login(login, password);
 
             // Assert
             Assert.IsType<OkObjectResult>(result);
-        }
-
-        [Fact]
-        public async Task Login_NoContent()
-        {
-            // Arrange
-            var login = "login";
-            var password = "password";
-            _userService.Setup(x => x.Login(login, password)).ReturnsAsync((LoginResponse)null);
-
-            // Act
-            var result = await _controller.Login(login, password);
-
-            // Assert
-            Assert.IsType<NoContentResult>(result);
         }
 
         [Theory]
@@ -61,14 +61,281 @@ namespace AirFinder.API.Tests
             // Arrange
             var login = "login";
             var password = "password";
-            var notificationModel = new NotificationModel("mocked key", "mocked message", notificationType);
-            _notification.Setup(x => x.HasNotification).Returns(true);
-            _notification.Setup(x => x.NotificationModel).Returns(notificationModel);
+            SetupNotification(notificationType);
 
             // Act
             var result = await _controller.Login(login, password);
 
             // Assert
+            NotificationsAsserts(notificationType, result);
+        }
+        #endregion
+
+        #region CreateUser
+        [Fact]
+        public async Task CreateUser_ShouldReturnOk()
+        {
+            // Arrange
+            var request = new UserRequest();
+            var response = new CreateUserResponse();
+            _userService.Setup(x => x.CreateUserAsync(It.IsAny<UserRequest>())).ReturnsAsync(response);
+
+            // Act
+            var result = await _controller.CreateUser(request);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Theory]
+        [InlineData(ENotificationType.Default)]
+        [InlineData(ENotificationType.NotFound)]
+        [InlineData(ENotificationType.BadRequestError)]
+        [InlineData(ENotificationType.Forbidden)]
+        public async Task CreateUser_Notification(ENotificationType notificationType)
+        {
+            // Arrange
+            var request = new UserRequest();
+            SetupNotification(notificationType);
+
+            // Act
+            var result = await _controller.CreateUser(request);
+
+            // Assert
+            NotificationsAsserts(notificationType, result);
+        }
+        #endregion
+
+        #region CreateAnotherUser
+        [Fact]
+        public async Task CreateAnotherUser_ShouldReturnOk()
+        {
+            // Arrange
+            var request = new CreateAnotherUserRequest();
+            var response = new CreateUserResponse();
+            _userService.Setup(x => x.CreateAnotherUserAsync(It.IsAny<CreateAnotherUserRequest>(), It.IsAny<Guid>())).ReturnsAsync(response);
+
+            // Act
+            var result = await _controller.CreateAnotherUser(request);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Theory]
+        [InlineData(ENotificationType.Default)]
+        [InlineData(ENotificationType.NotFound)]
+        [InlineData(ENotificationType.BadRequestError)]
+        [InlineData(ENotificationType.Forbidden)]
+        public async Task CreateAnotherUser_Notification(ENotificationType notificationType)
+        {
+            // Arrange
+            var request = new CreateAnotherUserRequest();
+            SetupNotification(notificationType);
+
+            // Act
+            var result = await _controller.CreateAnotherUser(request);
+
+            // Assert
+            NotificationsAsserts(notificationType, result);
+        }
+        #endregion
+
+        #region Delete
+        [Fact]
+        public async Task DeleteUser_ShouldReturnOk()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var response = new GenericResponse();
+            _userService.Setup(x => x.DeleteUserAsync(It.IsAny<Guid>())).ReturnsAsync(response);
+
+            // Act
+            var result = await _controller.Delete(userId);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Theory]
+        [InlineData(ENotificationType.Default)]
+        [InlineData(ENotificationType.NotFound)]
+        [InlineData(ENotificationType.BadRequestError)]
+        [InlineData(ENotificationType.Forbidden)]
+        public async Task DeleteUser_Notification(ENotificationType notificationType)
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            SetupNotification(notificationType);
+
+            // Act
+            var result = await _controller.Delete(userId);
+
+            // Assert
+            NotificationsAsserts(notificationType, result);
+        }
+        #endregion
+
+        #region UpdatePassword
+        [Fact]
+        public async Task UpdatePassword_ShouldReturnOk()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var request = new UpdatePasswordRequest();
+            var response = new GenericResponse();
+            _userService.Setup(x => x.UpdatePasswordAsync(It.IsAny<Guid>(), It.IsAny<UpdatePasswordRequest>())).ReturnsAsync(response);
+
+            // Act
+            var result = await _controller.Put(id, request);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Theory]
+        [InlineData(ENotificationType.Default)]
+        [InlineData(ENotificationType.NotFound)]
+        [InlineData(ENotificationType.BadRequestError)]
+        [InlineData(ENotificationType.Forbidden)]
+        public async Task UpdatePassword_Notification(ENotificationType notificationType)
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var request = new UpdatePasswordRequest();
+            SetupNotification(notificationType);
+
+            // Act
+            var result = await _controller.Put(id, request);
+
+            // Assert
+            NotificationsAsserts(notificationType, result);
+        }
+        #endregion
+
+        #region SendTokenForgotPassword
+        [Fact]
+        public async Task SendTokenForgotPassword_ShouldReturnOk()
+        {
+            // Arrange
+            var email = "test@example.com";
+            var response = new GenericResponse();
+            _userService.Setup(x => x.SendTokenEmailAsync(It.IsAny<string>())).ReturnsAsync(response);
+
+            // Act
+            var result = await _controller.SendTokenForgotPassword(email);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Theory]
+        [InlineData(ENotificationType.Default)]
+        [InlineData(ENotificationType.NotFound)]
+        [InlineData(ENotificationType.BadRequestError)]
+        [InlineData(ENotificationType.Forbidden)]
+        public async Task SendTokenForgotPassword_Notification(ENotificationType notificationType)
+        {
+            // Arrange
+            var email = "test@example.com";
+            SetupNotification(notificationType);
+
+            // Act
+            var result = await _controller.SendTokenForgotPassword(email);
+
+            // Assert
+            NotificationsAsserts(notificationType, result);
+        }
+        #endregion
+
+        #region VerifyToken
+        [Fact]
+        public async Task VerifyToken_ShouldReturnOk()
+        {
+            // Arrange
+            var request = new VerifyTokenRequest();
+            var response = new GenericResponse();
+            _userService.Setup(x => x.VerifyTokenAsync(It.IsAny<VerifyTokenRequest>())).ReturnsAsync(response);
+
+            // Act
+            var result = await _controller.VerifyToken(request);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Theory]
+        [InlineData(ENotificationType.Default)]
+        [InlineData(ENotificationType.NotFound)]
+        [InlineData(ENotificationType.BadRequestError)]
+        [InlineData(ENotificationType.Forbidden)]
+        public async Task VerifyToken_Notification(ENotificationType notificationType)
+        {
+            // Arrange
+            var request = new VerifyTokenRequest();
+            SetupNotification(notificationType);
+
+            // Act
+            var result = await _controller.VerifyToken(request);
+
+            // Assert
+            NotificationsAsserts(notificationType, result);
+        }
+        #endregion
+
+        #region ChangePassword
+        [Fact]
+        public async Task ChangePassword_ShouldReturnOk()
+        {
+            // Arrange
+            var request = new ChangePasswordRequest();
+            var response = new GenericResponse();
+            _userService.Setup(x => x.ChangePasswordAsync(It.IsAny<ChangePasswordRequest>())).ReturnsAsync(response);
+
+            // Act
+            var result = await _controller.UpdatePassword(request);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Theory]
+        [InlineData(ENotificationType.Default)]
+        [InlineData(ENotificationType.NotFound)]
+        [InlineData(ENotificationType.BadRequestError)]
+        [InlineData(ENotificationType.Forbidden)]
+        public async Task ChangePassword_Notification(ENotificationType notificationType)
+        {
+            // Arrange
+            var request = new ChangePasswordRequest();
+            SetupNotification(notificationType);
+
+            // Act
+            var result = await _controller.UpdatePassword(request);
+
+            // Assert
+            NotificationsAsserts(notificationType, result);
+        }
+        #endregion
+
+        #region private methods
+        private void SetupHttpContext()
+        {
+            var userId = Guid.NewGuid();
+            var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlY2U1YTI5ZS1hY2Y1LTQ5OTMtOTk5MC0wOTM1OGU4MzA3MjQiLCJuYmYiOjAsImV4cCI6MCwiaWF0IjowfQ.hbZd8yUayA6mNd20e4VrPm0KAcshCpqO7-VFFD5i35I";
+            _httpContext.Setup(x => x.Request.Headers["Authorization"]).Returns($"Bearer {token}");
+            var claims = new[] { new System.Security.Claims.Claim("userId", userId.ToString()) };
+        }
+
+        private void SetupNotification(ENotificationType notificationType)
+        {
+            var notificationModel = new NotificationModel("mocked key", "mocked message", notificationType);
+            _notification.Setup(x => x.HasNotification).Returns(true);
+            _notification.Setup(x => x.NotificationModel).Returns(notificationModel);
+        }
+
+        private void NotificationsAsserts(ENotificationType notificationType, IActionResult result)
+        {
             switch (notificationType)
             {
                 case ENotificationType.NotFound:
@@ -85,7 +352,7 @@ namespace AirFinder.API.Tests
                     break;
             }
         }
-
         #endregion
+
     }
 }

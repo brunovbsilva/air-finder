@@ -18,7 +18,7 @@ namespace AirFinder.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Login([FromQuery] string login, [FromQuery] string password)
         {
-            return Response(await _userService.Login(login, password));
+            return Response(await _userService.LoginAsync(login, password));
         }
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserRequest request)
@@ -35,7 +35,7 @@ namespace AirFinder.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            return Response(await _userService.Delete(id));
+            return Response(await _userService.DeleteUserAsync(id));
         }
         [Authorize]
         [HttpPut("password/{id}")]
@@ -47,17 +47,17 @@ namespace AirFinder.API.Controllers
         [HttpPost("Password/token")]
         public async Task<IActionResult> SendTokenForgotPassword([FromQuery] string email)
         {
-            return Response(await _userService.SendTokenEmail(email));
+            return Response(await _userService.SendTokenEmailAsync(email));
         }
         [HttpGet("Password/token")]
         public async Task<IActionResult> VerifyToken([FromQuery] VerifyTokenRequest request) 
         {
-            return Response(await _userService.VerifyToken(request));
+            return Response(await _userService.VerifyTokenAsync(request));
         }
         [HttpPut("Password/token")]
         public async Task<IActionResult> UpdatePassword([FromQuery] ChangePasswordRequest request)
         {
-            return Response(await _userService.ChangePassword(request));
+            return Response(await _userService.ChangePasswordAsync(request));
         }
     }
 }
