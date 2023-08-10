@@ -146,11 +146,11 @@ namespace AirFinder.Application.Users.Services
             var user = await _userRepository.GetByEmailAsync(request.Email.ToLower());
             if (user == null) throw new ArgumentException(String.Concat("User with email", nameof(request.Email), " not found"));
 
-            var _token = await _tokenRepository.GetByToken(request.Token);
-            if (_token == null || _token.IdUser != user.Id) throw new ArgumentException("Token inválido");
+            var token = await _tokenRepository.GetByToken(request.Token);
+            if (token == null || token.IdUser != user.Id) throw new ArgumentException("Token inválido");
 
-            _token.Valid = false;
-            await _tokenRepository.UpdateWithSaveChangesAsync(_token);
+            token.Valid = false;
+            await _tokenRepository.UpdateWithSaveChangesAsync(token);
             return new GenericResponse();
         });
 

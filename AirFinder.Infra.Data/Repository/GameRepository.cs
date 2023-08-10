@@ -1,4 +1,5 @@
-﻿using AirFinder.Domain.BattleGrounds;
+﻿using Abp.Extensions;
+using AirFinder.Domain.BattleGrounds;
 using AirFinder.Domain.GameLogs;
 using AirFinder.Domain.Games;
 using AirFinder.Domain.Games.Models.Dtos;
@@ -25,13 +26,15 @@ namespace AirFinder.Infra.Data.Repository
             var tbBG = _unitOfWork.Context.Set<BattleGround>().AsNoTracking();
             var tbUser = _unitOfWork.Context.Set<User>().AsNoTracking();
             var tbGameLog = _unitOfWork.Context.Set<GameLog>().AsNoTracking();
-            var ticksNow = DateTime.Now.Ticks;
+            var ticksNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             var query = (
                 from g in tbGame
                 join bg in tbBG on g.IdBattleGround equals bg.Id into BGs from bgd in BGs.DefaultIfEmpty()
                 join u in tbUser on g.IdCreator equals u.Id into Us from usd in Us.DefaultIfEmpty()
                 join gl in tbGameLog on g.Id equals gl.GameId into GLs from gld in GLs.DefaultIfEmpty()
+
+                let players = tbGameLog.Count(gl => gl.GameId == g.Id && gl.PaymentDate != null)
 
                 select new GameCardDto()
                 {
@@ -42,15 +45,16 @@ namespace AirFinder.Infra.Data.Repository
                     DateFrom = g.MillisDateFrom,
                     DateUpTo = g.MillisDateUpTo,
                     MaxPlayers = g.MaxPlayers,
+                    Players = players,
                     ImageUrl = bgd.ImageUrl,
                     Verified = usd.Roll == UserRoll.Admnistrator || usd.Roll == UserRoll.ContentCreator,
                     CanDelete = g.IdCreator == userId,
-                    GameStatus = gld.PaymentDate != null ? GamePaymentStatus.Paid : gld.JoinDate != null ? GamePaymentStatus.Joined : GamePaymentStatus.NotJoined
+                    GamePaymentStatus = gld.PaymentDate != null ? GamePaymentStatus.Paid : gld.JoinDate != null ? GamePaymentStatus.Joined : GamePaymentStatus.NotJoined
                 })
                 .Where(x =>
                     (request.GameStatus == GameStatus.Created && x.DateFrom > ticksNow) ||
-                    (request.GameStatus == GameStatus.Started && x.DateFrom < ticksNow && x.DateUpTo > ticksNow) ||
-                    (request.GameStatus == GameStatus.Finished && x.DateUpTo < ticksNow) ||
+                    (request.GameStatus == GameStatus.Started && x.DateFrom < ticksNow && x.DateUpTo > ticksNow && (x.CreatorId == userId || x.GamePaymentStatus == GamePaymentStatus.Joined || x.GamePaymentStatus == GamePaymentStatus.Paid)) ||
+                    (request.GameStatus == GameStatus.Finished && x.DateUpTo < ticksNow && (x.CreatorId == userId || x.GamePaymentStatus == GamePaymentStatus.Paid)) ||
                     (request.GameStatus == GameStatus.All)
                 )
                 .OrderBy(x => x.DateFrom);

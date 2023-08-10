@@ -2,6 +2,6 @@
 {
     public interface ITokenRepository : IBaseRepository<TokenControl>
     {
-        Task<TokenControl> GetByToken(string token);
+        Task<TokenControl?> GetByToken(string token);
     }
 }
