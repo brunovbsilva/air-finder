@@ -9,6 +9,7 @@ using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Domain.Users;
 using AirFinder.Infra.Http.ImgurService.Responses;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Errors.Model;
 
 namespace AirFinder.Application.BattleGrounds.Services
 {
@@ -40,7 +41,7 @@ namespace AirFinder.Application.BattleGrounds.Services
 
         public async Task<BaseResponse?> DeleteBattleGround(Guid id) => await ExecuteAsync(
             async () => {
-                var battleGround = await _battleGroundRepository.GetByIDAsync(id) ?? throw new ArgumentException("BattleGround not found");
+                var battleGround = await _battleGroundRepository.GetByIDAsync(id) ?? throw new NotFoundBattlegroundException();
                 await _battleGroundRepository.DeleteAsync(id);
                 return new GenericResponse();
             }
@@ -48,7 +49,7 @@ namespace AirFinder.Application.BattleGrounds.Services
 
         public async Task<GetBattleGroundResponse?> GetBattleGrounds(Guid id) => await ExecuteAsync(
             async () => {
-                var user = await _userRepository.GetByIDAsync(id) ?? throw new ArgumentException("User not found");
+                var user = await _userRepository.GetByIDAsync(id) ?? throw new NotFoundUserException();
                 var battleGround = await _battleGroundRepository.GetAll().Where(x => x.IdCreator == id).Select(x => (BattleGroundDto)x).ToListAsync();
                 return new GetBattleGroundResponse() { Battlegrounds = battleGround };
             }
@@ -56,7 +57,7 @@ namespace AirFinder.Application.BattleGrounds.Services
 
         public async Task<BaseResponse?> UpdateBattleGround(Guid id, UpdateBattleGroundRequest request) => await ExecuteAsync(
             async () => { 
-                var battleGround = await _battleGroundRepository.GetByIDAsync(id) ?? throw new ArgumentException("BattleGround not found");
+                var battleGround = await _battleGroundRepository.GetByIDAsync(id) ?? throw new NotFoundBattlegroundException();
 
                 battleGround.Name = request.Name;
                 battleGround.ImageUrl = request.ImageUrl;

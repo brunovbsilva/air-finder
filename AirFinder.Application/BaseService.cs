@@ -32,6 +32,10 @@ namespace AirFinder.Application
             {
                 _notification.AddNotification("Forbidden", e.Message, NotificationModel.ENotificationType.Forbidden);
             }
+            catch (MethodNotAllowedException e)
+            {
+                _notification.AddNotification("Method Not Allowed", e.Message, NotificationModel.ENotificationType.NotAllowed);
+            }
             catch (Exception e)
             {
                 _notification.AddNotification("Internal Error", e.Message, NotificationModel.ENotificationType.InternalServerError);

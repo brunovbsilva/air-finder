@@ -27,7 +27,8 @@
             InternalServerError = 1,
             NotFound = 2,
             BadRequestError = 3,
-            Forbidden = 4
+            Forbidden = 4,
+            NotAllowed = 5,
         }
     }
 }
