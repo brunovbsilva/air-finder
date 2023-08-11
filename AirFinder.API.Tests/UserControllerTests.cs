@@ -34,29 +34,14 @@ namespace AirFinder.API.Tests
             };
         }
 
-        #region Login
-        [Fact]
-        public async Task Login_ShouldReturnOk()
-        {
-            // Arrange
-            var login = "login";
-            var password = "password";
-            LoginResponse response = new LoginResponse();
-            _userService.Setup(x => x.LoginAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
-
-            // Act
-            var result = await _controller.Login(login, password);
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result);
-        }
-
+        #region Notifications
         [Theory]
         [InlineData(ENotificationType.Default)]
         [InlineData(ENotificationType.NotFound)]
         [InlineData(ENotificationType.BadRequestError)]
         [InlineData(ENotificationType.Forbidden)]
-        public async Task Login_Notification(ENotificationType notificationType)
+        [InlineData(ENotificationType.InternalServerError)]
+        public async Task Notification(ENotificationType notificationType)
         {
             // Arrange
             var login = "login";
@@ -68,6 +53,40 @@ namespace AirFinder.API.Tests
 
             // Assert
             NotificationsAsserts(notificationType, result);
+        }
+        #endregion
+
+        #region Login
+        [Fact]
+        public async Task Login_ShouldReturnOk()
+        {
+            // Arrange
+            var login = "login";
+            var password = "password";
+            var response = new LoginResponse();
+            _userService.Setup(x => x.LoginAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
+
+            // Act
+            var result = await _controller.Login(login, password);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task Login_NoContent()
+        {
+            // Arrange
+            var login = "login";
+            var password = "password";
+            LoginResponse? response = null;
+            _userService.Setup(x => x.LoginAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
+
+            // Act
+            var result = await _controller.Login(login, password);
+
+            // Assert
+            Assert.IsType<NoContentResult>(result);
         }
         #endregion
 
@@ -87,22 +106,19 @@ namespace AirFinder.API.Tests
             Assert.IsType<OkObjectResult>(result);
         }
 
-        [Theory]
-        [InlineData(ENotificationType.Default)]
-        [InlineData(ENotificationType.NotFound)]
-        [InlineData(ENotificationType.BadRequestError)]
-        [InlineData(ENotificationType.Forbidden)]
-        public async Task CreateUser_Notification(ENotificationType notificationType)
+        [Fact]
+        public async Task CreateUser_NoContent()
         {
             // Arrange
             var request = new UserRequest();
-            SetupNotification(notificationType);
+            CreateUserResponse? response = null;
+            _userService.Setup(x => x.CreateUserAsync(It.IsAny<UserRequest>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.CreateUser(request);
 
             // Assert
-            NotificationsAsserts(notificationType, result);
+            Assert.IsType<NoContentResult>(result);
         }
         #endregion
 
@@ -122,22 +138,19 @@ namespace AirFinder.API.Tests
             Assert.IsType<OkObjectResult>(result);
         }
 
-        [Theory]
-        [InlineData(ENotificationType.Default)]
-        [InlineData(ENotificationType.NotFound)]
-        [InlineData(ENotificationType.BadRequestError)]
-        [InlineData(ENotificationType.Forbidden)]
-        public async Task CreateAnotherUser_Notification(ENotificationType notificationType)
+        [Fact]
+        public async Task CreateAnotherUser_NoContent()
         {
             // Arrange
             var request = new CreateAnotherUserRequest();
-            SetupNotification(notificationType);
+            CreateUserResponse? response = null;
+            _userService.Setup(x => x.CreateAnotherUserAsync(It.IsAny<CreateAnotherUserRequest>(), It.IsAny<Guid>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.CreateAnotherUser(request);
 
             // Assert
-            NotificationsAsserts(notificationType, result);
+            Assert.IsType<NoContentResult>(result);
         }
         #endregion
 
@@ -157,22 +170,19 @@ namespace AirFinder.API.Tests
             Assert.IsType<OkObjectResult>(result);
         }
 
-        [Theory]
-        [InlineData(ENotificationType.Default)]
-        [InlineData(ENotificationType.NotFound)]
-        [InlineData(ENotificationType.BadRequestError)]
-        [InlineData(ENotificationType.Forbidden)]
-        public async Task DeleteUser_Notification(ENotificationType notificationType)
+        [Fact]
+        public async Task DeleteUser_NoContent()
         {
             // Arrange
             var userId = Guid.NewGuid();
-            SetupNotification(notificationType);
+            GenericResponse? response = null;
+            _userService.Setup(x => x.DeleteUserAsync(It.IsAny<Guid>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.Delete(userId);
 
             // Assert
-            NotificationsAsserts(notificationType, result);
+            Assert.IsType<NoContentResult>(result);
         }
         #endregion
 
@@ -193,23 +203,20 @@ namespace AirFinder.API.Tests
             Assert.IsType<OkObjectResult>(result);
         }
 
-        [Theory]
-        [InlineData(ENotificationType.Default)]
-        [InlineData(ENotificationType.NotFound)]
-        [InlineData(ENotificationType.BadRequestError)]
-        [InlineData(ENotificationType.Forbidden)]
-        public async Task UpdatePassword_Notification(ENotificationType notificationType)
+        [Fact]
+        public async Task UpdatePassword_NoContent()
         {
             // Arrange
             var id = Guid.NewGuid();
             var request = new UpdatePasswordRequest();
-            SetupNotification(notificationType);
+            GenericResponse? response = null;
+            _userService.Setup(x => x.UpdatePasswordAsync(It.IsAny<Guid>(), It.IsAny<UpdatePasswordRequest>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.Put(id, request);
 
             // Assert
-            NotificationsAsserts(notificationType, result);
+            Assert.IsType<NoContentResult>(result);
         }
         #endregion
 
@@ -229,22 +236,19 @@ namespace AirFinder.API.Tests
             Assert.IsType<OkObjectResult>(result);
         }
 
-        [Theory]
-        [InlineData(ENotificationType.Default)]
-        [InlineData(ENotificationType.NotFound)]
-        [InlineData(ENotificationType.BadRequestError)]
-        [InlineData(ENotificationType.Forbidden)]
-        public async Task SendTokenForgotPassword_Notification(ENotificationType notificationType)
+        [Fact]
+        public async Task SendTokenForgotPassword_NoContent()
         {
             // Arrange
             var email = "test@example.com";
-            SetupNotification(notificationType);
+            GenericResponse? response = null;
+            _userService.Setup(x => x.SendTokenEmailAsync(It.IsAny<string>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.SendTokenForgotPassword(email);
 
             // Assert
-            NotificationsAsserts(notificationType, result);
+            Assert.IsType<NoContentResult>(result);
         }
         #endregion
 
@@ -264,22 +268,19 @@ namespace AirFinder.API.Tests
             Assert.IsType<OkObjectResult>(result);
         }
 
-        [Theory]
-        [InlineData(ENotificationType.Default)]
-        [InlineData(ENotificationType.NotFound)]
-        [InlineData(ENotificationType.BadRequestError)]
-        [InlineData(ENotificationType.Forbidden)]
-        public async Task VerifyToken_Notification(ENotificationType notificationType)
+        [Fact]
+        public async Task VerifyToken_NoContent()
         {
             // Arrange
             var request = new VerifyTokenRequest();
-            SetupNotification(notificationType);
+            GenericResponse? response = null;
+            _userService.Setup(x => x.VerifyTokenAsync(It.IsAny<VerifyTokenRequest>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.VerifyToken(request);
 
             // Assert
-            NotificationsAsserts(notificationType, result);
+            Assert.IsType<NoContentResult>(result);
         }
         #endregion
 
@@ -299,22 +300,19 @@ namespace AirFinder.API.Tests
             Assert.IsType<OkObjectResult>(result);
         }
 
-        [Theory]
-        [InlineData(ENotificationType.Default)]
-        [InlineData(ENotificationType.NotFound)]
-        [InlineData(ENotificationType.BadRequestError)]
-        [InlineData(ENotificationType.Forbidden)]
-        public async Task ChangePassword_Notification(ENotificationType notificationType)
+        [Fact]
+        public async Task ChangePassword_NoContent()
         {
             // Arrange
             var request = new ChangePasswordRequest();
-            SetupNotification(notificationType);
+            GenericResponse? response = null;
+            _userService.Setup(x => x.ChangePasswordAsync(It.IsAny<ChangePasswordRequest>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.UpdatePassword(request);
 
             // Assert
-            NotificationsAsserts(notificationType, result);
+            Assert.IsType<NoContentResult>(result);
         }
         #endregion
 
@@ -334,7 +332,7 @@ namespace AirFinder.API.Tests
             _notification.Setup(x => x.NotificationModel).Returns(notificationModel);
         }
 
-        private void NotificationsAsserts(ENotificationType notificationType, IActionResult result)
+        private static void NotificationsAsserts(ENotificationType notificationType, IActionResult result)
         {
             switch (notificationType)
             {
