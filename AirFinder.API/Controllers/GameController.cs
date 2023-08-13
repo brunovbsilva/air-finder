@@ -1,6 +1,7 @@
 ﻿using AirFinder.Application.Games.Services;
 using AirFinder.Domain.Common;
 using AirFinder.Domain.Games.Models.Requests;
+using AirFinder.Domain.Games.Models.Responses;
 using AirFinder.Domain.SeedWork.Notification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,13 +27,13 @@ namespace AirFinder.API.Controllers
 
         [HttpGet]
         [SwaggerOperation(Summary = "Returns a list of games in pages of 15 games")]
-        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ListGamesResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ListGames([FromQuery] ListGamesRequest request) { return Response(await _gameService.ListGames(request, GetUserId(HttpContext))); }
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Returns a game by id")]
-        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetDetailsResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetDetails([FromRoute] Guid id) { return Response(await _gameService.GetDetails(id)); }
 

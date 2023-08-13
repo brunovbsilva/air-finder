@@ -34,14 +34,33 @@ namespace AirFinder.Application.Games.Services
             _gameLogRepository = gameLogRepository;
         }
 
-        public async Task<BaseResponse?> CreateGame(CreateGameRequest request, Guid userId) => await ExecuteAsync(async () => 
+        #region CreateGame
+        public async Task<BaseResponse?> CreateGame(CreateGameRequest request, Guid userId) => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
             var bg = await _battleGroundRepository.GetByIDAsync(request.IdBattleground) ?? throw new NotFoundBattlegroundException();
             await _gameRepository.InsertWithSaveChangesAsync(new Game(request, userId));
             return new GenericResponse();
         });
-        public async Task<BaseResponse?> UpdateGame(UpdateGameRequest request, Guid userId) => await ExecuteAsync(async () => 
+        #endregion
+
+        #region ListGames
+        public async Task<ListGamesResponse?> ListGames(ListGamesRequest request, Guid userId) => await ExecuteAsync(async () =>
+        {
+            var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
+            return await _gameRepository.getGameList(request, userId);
+        });
+        #endregion
+
+        #region GetDetails
+        public async Task<GetDetailsResponse?> GetDetails(Guid id) => await ExecuteAsync(async () => {
+            var game = await _gameRepository.GetByIDAsync(id) ?? throw new NotFoundGameException();
+            return new GetDetailsResponse { Game = (GameDto)game };
+        });
+        #endregion
+
+        #region UpdateGame
+        public async Task<BaseResponse?> UpdateGame(UpdateGameRequest request, Guid userId) => await ExecuteAsync(async () =>
         {
             var game = await _gameRepository.GetByIDAsync(request.Id) ?? throw new NotFoundGameException();
             if (game.IdCreator != userId) throw new MethodNotAllowedException();
@@ -51,6 +70,9 @@ namespace AirFinder.Application.Games.Services
             await _gameRepository.UpdateWithSaveChangesAsync(game);
             return new GenericResponse();
         });
+        #endregion
+
+        #region DeleteGame
         public async Task<BaseResponse?> DeleteGame(Guid id, Guid userId) => await ExecuteAsync(async () => 
         {
             var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
@@ -59,15 +81,9 @@ namespace AirFinder.Application.Games.Services
             await _gameRepository.DeleteAsync(id);
             return new GenericResponse();
         });
-        public async Task<ListGamesResponse?> ListGames(ListGamesRequest request, Guid userId) => await ExecuteAsync(async () =>
-        {
-            var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
-            return await _gameRepository.getGameList(request, userId);
-        });
-        public async Task<GetDetailsResponse?> GetDetails(Guid id) => await ExecuteAsync(async () => {
-            var game = await _gameRepository.GetByIDAsync(id) ?? throw new NotFoundGameException();
-            return new GetDetailsResponse{ Game = (GameDto)game }; 
-        });
+        #endregion
+
+        #region JoinGame
         public async Task<BaseResponse?> JoinGame(Guid gameId, Guid userId) => await ExecuteAsync(async () => 
         {
             var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
@@ -77,6 +93,9 @@ namespace AirFinder.Application.Games.Services
             await _gameLogRepository.InsertWithSaveChangesAsync(gameLog);
             return new GenericResponse();
         });
+        #endregion
+
+        #region LeaveGame
         public async Task<BaseResponse?> LeaveGame(Guid gameId, Guid userId) => await ExecuteAsync(async () => 
         {
             var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
@@ -87,6 +106,9 @@ namespace AirFinder.Application.Games.Services
             await _gameLogRepository.DeleteAsync(gameLog);
             return new GenericResponse();
         });
+        #endregion
+
+        #region PayGame
         public async Task<BaseResponse?> PayGame(Guid gameId, Guid userId) => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
@@ -97,6 +119,9 @@ namespace AirFinder.Application.Games.Services
             await _gameLogRepository.UpdateWithSaveChangesAsync(gameLog);
             return new GenericResponse();
         });
+        #endregion
+
+        #region ValidateGameJoin
         public async Task<BaseResponse?> ValidateGameJoin(ValidateGameJoinRequest request, Guid userId) => await ExecuteAsync(async () => 
         {
             var user = await _userRepository.GetByIDAsync(request.UserId) ?? throw new NotFoundUserException();
@@ -109,6 +134,7 @@ namespace AirFinder.Application.Games.Services
             await _gameLogRepository.UpdateWithSaveChangesAsync(gameLog);
             return new GenericResponse();
         });
+        #endregion
 
     }
 }
