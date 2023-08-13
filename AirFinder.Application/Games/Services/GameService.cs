@@ -38,8 +38,7 @@ namespace AirFinder.Application.Games.Services
         {
             var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
             var bg = await _battleGroundRepository.GetByIDAsync(request.IdBattleground) ?? throw new NotFoundBattlegroundException();
-            var game = new Game(request, userId);
-            await _gameRepository.InsertWithSaveChangesAsync(game);
+            await _gameRepository.InsertWithSaveChangesAsync(new Game(request, userId));
             return new GenericResponse();
         });
         public async Task<BaseResponse?> UpdateGame(UpdateGameRequest request, Guid userId) => await ExecuteAsync(async () => 
@@ -47,11 +46,7 @@ namespace AirFinder.Application.Games.Services
             var game = await _gameRepository.GetByIDAsync(request.Id) ?? throw new NotFoundGameException();
             if (game.IdCreator != userId) throw new MethodNotAllowedException();
 
-            game.Name = request.Name;
-            game.Description = request.Description;
-            game.MillisDateFrom = request.DateFrom;
-            game.MillisDateUpTo = request.DateUpTo;
-            game.MaxPlayers = request.MaxPlayers ?? 0;
+            game.Update(request);
 
             await _gameRepository.UpdateWithSaveChangesAsync(game);
             return new GenericResponse();
@@ -114,6 +109,6 @@ namespace AirFinder.Application.Games.Services
             await _gameLogRepository.UpdateWithSaveChangesAsync(gameLog);
             return new GenericResponse();
         });
-        
+
     }
 }

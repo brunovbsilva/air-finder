@@ -1,5 +1,5 @@
 ﻿namespace AirFinder.Domain.Games
 {
-    public class NotFoundGameException : Exception
+    public class NotFoundGameException : ArgumentException
     { public NotFoundGameException() : base("Game not found") { } }
 }

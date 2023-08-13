@@ -41,5 +41,14 @@ namespace AirFinder.Domain.Games
         public Guid IdCreator { get; set; }
         public virtual BattleGround? BattleGroud { get; set; }
         public virtual User? Creator { get; set; }
+
+        public void Update(UpdateGameRequest request)
+        {
+            Name = request.Name;
+            Description = request.Description;
+            MillisDateFrom = request.DateFrom;
+            MillisDateUpTo = request.DateUpTo;
+            MaxPlayers = request.MaxPlayers;
+        }
     }
 }
