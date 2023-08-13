@@ -10,7 +10,7 @@ namespace AirFinder.Infra.Data.Repository
         public UserRepository(IUnitOfWork unitOfWork) : base(unitOfWork) {
             _unitOfWork = unitOfWork;
         }
-        public IQueryable<User> GetAll()
+        public IQueryable<User> GetAllUsersWithPerson()
         {
             var tbPerson = _unitOfWork.Context.Set<Person>().AsNoTracking();
             var tbUser = _unitOfWork.Context.Set<User>().AsNoTracking();
@@ -130,7 +130,7 @@ namespace AirFinder.Infra.Data.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<User?> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(Guid id)
         {
             var tbPerson = _unitOfWork.Context.Set<Person>().AsNoTracking();
             var tbUser = _unitOfWork.Context.Set<User>().AsNoTracking();

@@ -1,19 +1,19 @@
-﻿using AirFinder.Application.Common;
-using AirFinder.Application.Users.Models.Request;
-using AirFinder.Application.Users.Models.Response;
+﻿using AirFinder.Domain.Common;
 using AirFinder.Domain.Users;
+using AirFinder.Domain.Users.Models.Requests;
+using AirFinder.Domain.Users.Models.Responses;
 
 namespace AirFinder.Application.Users.Services
 {
     public interface IUserService
     {
-        Task Insert(User item);
-        Task<BaseResponse?> Delete(int id);
+        Task<BaseResponse?> DeleteUserAsync(Guid id);
         Task<CreateUserResponse?> CreateUserAsync(UserRequest request);
-        Task<LoginResponse?> Login(string login, string password);
-        Task<BaseResponse?> UpdatePasswordAsync(int id, UpdatePasswordRequest password);
-        Task<BaseResponse?> SendTokenEmail(string email);
-        Task<BaseResponse?> VerifyToken(VerifyTokenRequest request);
-        Task<BaseResponse?> ChangePassword(ChangePasswordRequest request);
+        Task<LoginResponse?> LoginAsync(string login, string password);
+        Task<BaseResponse?> UpdatePasswordAsync(Guid id, UpdatePasswordRequest password);
+        Task<BaseResponse?> SendTokenEmailAsync(string email);
+        Task<BaseResponse?> VerifyTokenAsync(VerifyTokenRequest request);
+        Task<BaseResponse?> ChangePasswordAsync(ChangePasswordRequest request);
+        Task<BaseResponse?> CreateAnotherUserAsync(CreateAnotherUserRequest request, Guid userId); 
     }
 }

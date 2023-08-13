@@ -1,11 +1,11 @@
-﻿using Abp.Domain.Entities;
+﻿using AirFinder.Domain.Common;
 
 namespace AirFinder.Domain.Tokens
 {
-    public class TokenControl : Entity
+    public class TokenControl : BaseModel
     {
         public TokenControl() { }
-        public TokenControl(int idUser, string token, bool valid, DateTime sentDate, DateTime? expirationDate)
+        public TokenControl(Guid idUser, string token, bool valid, long sentDate, long? expirationDate)
         {
             IdUser = idUser;
             Token = token;
@@ -14,11 +14,11 @@ namespace AirFinder.Domain.Tokens
             ExpirationDate = expirationDate;
         }
 
-        public int IdUser { get; set; }
-        public string Token { get; set; }
-        public bool Valid { get; set; }
-        public DateTime SentDate { get; set; }
-        public DateTime? ExpirationDate { get; set; }
+        public Guid IdUser { get; set; } = Guid.Empty;
+        public string Token { get; set; } = string.Empty;
+        public bool Valid { get; set; } = false;
+        public long SentDate { get; set; } = 0;
+        public long? ExpirationDate { get; set; }
 
     }
 }

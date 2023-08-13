@@ -1,9 +1,9 @@
-﻿using Abp.Domain.Entities;
+﻿using AirFinder.Domain.Common;
 using AirFinder.Domain.People.Enums;
 
 namespace AirFinder.Domain.People
 {
-    public class Person : Entity
+    public class Person : BaseModel
     {
         public Person(string name, string email, DateTime birthday, string cpf, Gender gender, string phone) 
         {

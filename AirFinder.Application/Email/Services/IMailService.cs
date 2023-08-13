@@ -1,4 +1,4 @@
-﻿using AirFinder.Application.Email.Models.Request;
+﻿using AirFinder.Domain.Email.Models.Requests;
 
 namespace AirFinder.Application.Email.Services
 {

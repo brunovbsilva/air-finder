@@ -39,7 +39,7 @@ namespace AirFinder.Infra.Data
         public virtual async Task DeleteAsync(object id)
         {
             TEntity? entityToDelete = await _unitOfWork.Context.Set<TEntity>().FindAsync(id);
-            await DeleteAsync(entityToDelete);
+            await DeleteAsync(entityToDelete!);
         }
 
         public virtual async Task DeleteAsync(TEntity entity)

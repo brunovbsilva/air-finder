@@ -8,10 +8,10 @@ namespace AirFinder.Infra.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Person> builder)
         {
-            builder.ToTable("Person");
+            builder.ToTable("People");
 
             builder.HasKey(e => e.Id);
-            builder.Property(e => e.Id).HasColumnName("Id").HasColumnType("int").UseIdentityColumn().IsRequired();
+            builder.Property(e => e.Id).HasColumnName("Id").HasColumnType("uniqueidentifier").HasDefaultValueSql("newid()").IsRequired();
             builder.Property(e => e.Name).HasColumnName("Name").HasColumnType("varchar(80)").IsRequired();
             builder.Property(e => e.Email).HasColumnName("Email").HasColumnType("varchar(80)").IsRequired();
             builder.Property(e => e.Birthday).HasColumnName("Birthday").HasColumnType("date").IsRequired();

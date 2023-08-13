@@ -19,6 +19,7 @@ namespace AirFinder.Infra.Data.Repository
             var query = (from p in tbPerson.DefaultIfEmpty()
                          where (p.CPF == cpf && !string.IsNullOrEmpty(cpf))
                          select p);
+
             return await query.FirstOrDefaultAsync();
         }
 
@@ -29,6 +30,7 @@ namespace AirFinder.Infra.Data.Repository
             var query = (from p in tbPerson.DefaultIfEmpty()
                          where (p.Email == email && !string.IsNullOrEmpty(email))
                          select p);
+
             return await query.FirstOrDefaultAsync();
         }
     }

@@ -1,6 +1,7 @@
-﻿using AirFinder.Application.Users.Models.Request;
-using AirFinder.Application.Users.Services;
+﻿using AirFinder.Application.Users.Services;
 using AirFinder.Domain.SeedWork.Notification;
+using AirFinder.Domain.Users.Models.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AirFinder.API.Controllers
@@ -17,22 +18,28 @@ namespace AirFinder.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Login([FromQuery] string login, [FromQuery] string password)
         {
-            return Response(await _userService.Login(login, password));
+            return Response(await _userService.LoginAsync(login, password));
         }
-
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserRequest request)
         {
             return Response(await _userService.CreateUserAsync(request));
         }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        [Authorize]
+        [HttpPost("another")]
+        public async Task<IActionResult> CreateAnotherUser([FromBody] CreateAnotherUserRequest request)
         {
-            return Response(await _userService.Delete(id));
+            return Response(await _userService.CreateAnotherUserAsync(request, GetUserId(HttpContext)));
         }
-
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            return Response(await _userService.DeleteUserAsync(id));
+        }
+        [Authorize]
         [HttpPut("password/{id}")]
-        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] UpdatePasswordRequest request)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdatePasswordRequest request)
         {
             return Response(await _userService.UpdatePasswordAsync(id, request));
         }
@@ -40,17 +47,17 @@ namespace AirFinder.API.Controllers
         [HttpPost("Password/token")]
         public async Task<IActionResult> SendTokenForgotPassword([FromQuery] string email)
         {
-            return Response(await _userService.SendTokenEmail(email));
+            return Response(await _userService.SendTokenEmailAsync(email));
         }
         [HttpGet("Password/token")]
         public async Task<IActionResult> VerifyToken([FromQuery] VerifyTokenRequest request) 
         {
-            return Response(await _userService.VerifyToken(request));
+            return Response(await _userService.VerifyTokenAsync(request));
         }
         [HttpPut("Password/token")]
         public async Task<IActionResult> UpdatePassword([FromQuery] ChangePasswordRequest request)
         {
-            return Response(await _userService.ChangePassword(request));
+            return Response(await _userService.ChangePasswordAsync(request));
         }
     }
 }

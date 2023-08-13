@@ -8,13 +8,13 @@ namespace AirFinder.Infra.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.ToTable("User");
+            builder.ToTable("Users");
 
             builder.HasKey(e => e.Id);
-            builder.Property(e => e.Id).HasColumnName("Id").HasColumnType("int").UseIdentityColumn().IsRequired();
+            builder.Property(e => e.Id).HasColumnName("Id").HasColumnType("uniqueidentifier").HasDefaultValueSql("newid()").IsRequired();
             builder.Property(e => e.Login).HasColumnName("Login").HasColumnType("varchar(20)").IsRequired();
             builder.Property(e => e.Password).HasColumnName("Password").HasColumnType("varchar(20)").IsRequired();
-            builder.Property(e => e.IdPerson).HasColumnName("IdPerson").HasColumnType("int").IsRequired();
+            builder.Property(e => e.IdPerson).HasColumnName("IdPerson").HasColumnType("uniqueidentifier").IsRequired();
             builder.Property(e => e.Roll).HasColumnName("Roll").HasColumnType("int").IsRequired();
 
             builder.HasOne(e => e.Person)

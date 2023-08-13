@@ -5,6 +5,8 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Rewrite;
 using AirFinder.API.HealthCheck;
 using AirFinder.Application.Email.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,12 +53,30 @@ builder.Services.AddCors(options =>
     });
 });
 
+var key = Convert.FromBase64String(builder.Configuration.GetSection("App:Settings:Jwt:Secret").Value!);
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseRouting();
-app.UseAuthorization();
 app.UseCors("AllowAllOrigins");
+app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
