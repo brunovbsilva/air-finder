@@ -1,6 +1,7 @@
 ﻿using AirFinder.Domain.Users.Enums;
 using AirFinder.Domain.People;
 using AirFinder.Domain.Common;
+using AirFinder.Domain.Users.Models.Requests;
 
 namespace AirFinder.Domain.Users
 {
@@ -14,6 +15,37 @@ namespace AirFinder.Domain.Users
             Roll = roll;
             Person = null;
         }
+
+        public User(UserRequest request)
+        {
+            Login = request.Login.ToLower();
+            Password = request.Password;
+            Roll = UserRoll.Default;
+            Person = new Person(
+                request.Name,
+                request.Email.ToLower(),
+                request.Birthday,
+                request.CPF,
+                request.Gender,
+                request.Phone
+            );
+        }
+
+        public User(UserAdminRequest request)
+        {
+            Login = request.Login.ToLower();
+            Password = request.Password;
+            Roll = request.Role;
+            Person = new Person(
+                request.Name,
+                request.Email.ToLower(),
+                request.Birthday,
+                request.CPF,
+                request.Gender,
+                request.Phone
+            );
+        }
+
         public User() {}
         public string Login { get; set; } = String.Empty;
         public string Password { get; set; } = String.Empty;

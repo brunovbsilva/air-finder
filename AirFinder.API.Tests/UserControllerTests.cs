@@ -44,12 +44,11 @@ namespace AirFinder.API.Tests
         public async Task Notification(ENotificationType notificationType)
         {
             // Arrange
-            var login = "login";
-            var password = "password";
+            var request = new LoginRequest();
             SetupNotification(notificationType);
 
             // Act
-            var result = await _controller.Login(login, password);
+            var result = await _controller.Login(request);
 
             // Assert
             NotificationsAsserts(notificationType, result);
@@ -61,13 +60,12 @@ namespace AirFinder.API.Tests
         public async Task Login_ShouldReturnOk()
         {
             // Arrange
-            var login = "login";
-            var password = "password";
+            var request = new LoginRequest();
             var response = new LoginResponse();
-            _userService.Setup(x => x.LoginAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
+            _userService.Setup(x => x.LoginAsync(It.IsAny<LoginRequest>())).ReturnsAsync(response);
 
             // Act
-            var result = await _controller.Login(login, password);
+            var result = await _controller.Login(request);
 
             // Assert
             Assert.IsType<OkObjectResult>(result);
@@ -77,13 +75,12 @@ namespace AirFinder.API.Tests
         public async Task Login_NoContent()
         {
             // Arrange
-            var login = "login";
-            var password = "password";
+            var request = new LoginRequest();
             LoginResponse? response = null;
-            _userService.Setup(x => x.LoginAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
+            _userService.Setup(x => x.LoginAsync(It.IsAny<LoginRequest>())).ReturnsAsync(response);
 
             // Act
-            var result = await _controller.Login(login, password);
+            var result = await _controller.Login(request);
 
             // Assert
             Assert.IsType<NoContentResult>(result);
@@ -96,7 +93,7 @@ namespace AirFinder.API.Tests
         {
             // Arrange
             var request = new UserRequest();
-            var response = new CreateUserResponse();
+            var response = new GenericResponse();
             _userService.Setup(x => x.CreateUserAsync(It.IsAny<UserRequest>())).ReturnsAsync(response);
 
             // Act
@@ -111,7 +108,7 @@ namespace AirFinder.API.Tests
         {
             // Arrange
             var request = new UserRequest();
-            CreateUserResponse? response = null;
+            BaseResponse? response = null;
             _userService.Setup(x => x.CreateUserAsync(It.IsAny<UserRequest>())).ReturnsAsync(response);
 
             // Act
@@ -124,12 +121,12 @@ namespace AirFinder.API.Tests
 
         #region CreateAnotherUser
         [Fact]
-        public async Task CreateAnotherUser_ShouldReturnOk()
+        public async Task CreateUserAdmin_ShouldReturnOk()
         {
             // Arrange
-            var request = new CreateAnotherUserRequest();
-            var response = new CreateUserResponse();
-            _userService.Setup(x => x.CreateAnotherUserAsync(It.IsAny<CreateAnotherUserRequest>(), It.IsAny<Guid>())).ReturnsAsync(response);
+            var request = new UserAdminRequest();
+            var response = new GenericResponse();
+            _userService.Setup(x => x.CreateUserAdminAsync(It.IsAny<UserAdminRequest>(), It.IsAny<Guid>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.CreateAnotherUser(request);
@@ -139,12 +136,12 @@ namespace AirFinder.API.Tests
         }
 
         [Fact]
-        public async Task CreateAnotherUser_NoContent()
+        public async Task CreateUserAdmin_NoContent()
         {
             // Arrange
-            var request = new CreateAnotherUserRequest();
-            CreateUserResponse? response = null;
-            _userService.Setup(x => x.CreateAnotherUserAsync(It.IsAny<CreateAnotherUserRequest>(), It.IsAny<Guid>())).ReturnsAsync(response);
+            var request = new UserAdminRequest();
+            BaseResponse? response = null;
+            _userService.Setup(x => x.CreateUserAdminAsync(It.IsAny<UserAdminRequest>(), It.IsAny<Guid>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.CreateAnotherUser(request);
@@ -164,7 +161,7 @@ namespace AirFinder.API.Tests
             _userService.Setup(x => x.DeleteUserAsync(It.IsAny<Guid>())).ReturnsAsync(response);
 
             // Act
-            var result = await _controller.Delete(userId);
+            var result = await _controller.Delete();
 
             // Assert
             Assert.IsType<OkObjectResult>(result);
@@ -179,7 +176,7 @@ namespace AirFinder.API.Tests
             _userService.Setup(x => x.DeleteUserAsync(It.IsAny<Guid>())).ReturnsAsync(response);
 
             // Act
-            var result = await _controller.Delete(userId);
+            var result = await _controller.Delete();
 
             // Assert
             Assert.IsType<NoContentResult>(result);
@@ -197,7 +194,7 @@ namespace AirFinder.API.Tests
             _userService.Setup(x => x.UpdatePasswordAsync(It.IsAny<Guid>(), It.IsAny<UpdatePasswordRequest>())).ReturnsAsync(response);
 
             // Act
-            var result = await _controller.Put(id, request);
+            var result = await _controller.Put(request);
 
             // Assert
             Assert.IsType<OkObjectResult>(result);
@@ -213,7 +210,7 @@ namespace AirFinder.API.Tests
             _userService.Setup(x => x.UpdatePasswordAsync(It.IsAny<Guid>(), It.IsAny<UpdatePasswordRequest>())).ReturnsAsync(response);
 
             // Act
-            var result = await _controller.Put(id, request);
+            var result = await _controller.Put(request);
 
             // Assert
             Assert.IsType<NoContentResult>(result);

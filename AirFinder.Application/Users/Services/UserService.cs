@@ -33,65 +33,34 @@ namespace AirFinder.Application.Users.Services
             _tokenRepository = tokenRepository;
             _jwtService = jwtService;
         }
-
-        #region Helpers
-        private async Task InsertAsync(User item)
-        {
-            if (await _userRepository.GetByLoginAsync(item.Login) != null) throw new LoginException();
-            if (await _personRepository.GetByCPFAsync(item.Person!.CPF) != null) throw new CPFException();
-            if (await _personRepository.GetByEmailAsync(item.Person.Email) != null) throw new EmailException();
-
-            await _userRepository.InsertWithSaveChangesAsync(item);
-        }
-        #endregion
         
         #region CreateUserAsync
-        public async Task<CreateUserResponse?> CreateUserAsync(UserRequest request)
+        public async Task<BaseResponse?> CreateUserAsync(UserRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = new User
-            {
-                Login = request.Login.ToLower(),
-                Password = request.Password,
-                Roll = UserRoll.Default,
-                Person = new Person(
-                    request.Name,
-                    request.Email.ToLower(),
-                    request.Birthday,
-                    request.CPF,
-                    request.Gender,
-                    request.Phone
-                )
-            };
-            await InsertAsync(user);
-            return (CreateUserResponse)user;
+            await InsertAsync(new User(request));
+            return new GenericResponse();
         });
         #endregion
 
         #region CreateAnotherUserAsync
-        public async Task<BaseResponse?> CreateAnotherUserAsync(CreateAnotherUserRequest request, Guid userId)
+        public async Task<BaseResponse?> CreateUserAdminAsync(UserAdminRequest request, Guid userId)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIdAsync(userId) ?? throw new NotFoundUserException();
-            var newUser = new User
-            {
-                Login = request.Login.ToLower(),
-                Password = request.Password,
-                Roll = request.Role < user.Roll ? user.Roll : request.Role,
-                IdPerson = user.IdPerson,
-                Person = null
-            };
-            await _userRepository.InsertWithSaveChangesAsync(newUser);
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null || user.Roll != UserRoll.Admnistrator) throw new ForbiddenException();
+
+            await InsertAsync(new User(request));
             return new GenericResponse();
         });
         #endregion
 
         #region Login
-        public async Task<LoginResponse?> LoginAsync(string login, string password)
+        public async Task<LoginResponse?> LoginAsync(LoginRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByLoginAsync(login.ToLower());
-            if (user == null || user.Password != password) throw new WrongCredentialsException();
+            var user = await _userRepository.GetByLoginAsync(request.Login.ToLower());
+            if (user == null || user.Password != request.Password) throw new WrongCredentialsException();
 
             var tokenRequest = new CreateTokenRequest
             {
@@ -115,8 +84,8 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> UpdatePasswordAsync(Guid id, UpdatePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIdAsync(id) ?? throw new NotFoundUserException();
-            if (user.Password != request.CurrentPassword) throw new WrongCredentialsException();
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null || user.Password != request.CurrentPassword) throw new WrongCredentialsException();
 
             user.Password = request.NewPassword;
             await _userRepository.UpdateWithSaveChangesAsync(user);
@@ -145,7 +114,6 @@ namespace AirFinder.Application.Users.Services
             var user = await _userRepository.GetByEmailAsync(request.Email.ToLower()) ?? throw new NotFoundUserException();
 
             var token = await _tokenRepository.GetByToken(request.Token);
-
             if (token == null || token.IdUser != user.Id) throw new InvalidTokenException();
 
             token.Valid = false;
@@ -173,8 +141,16 @@ namespace AirFinder.Application.Users.Services
             return new GenericResponse();
         });
         #endregion
-        
+
         #region Private Methods
+        private async Task InsertAsync(User item)
+        {
+            if (await _userRepository.GetByLoginAsync(item.Login) != null) throw new LoginException();
+            if (await _personRepository.GetByCPFAsync(item.Person!.CPF) != null) throw new CPFException();
+            if (await _personRepository.GetByEmailAsync(item.Person.Email) != null) throw new EmailException();
+
+            await _userRepository.InsertWithSaveChangesAsync(item);
+        }
         private static string GeneratePasswordToken()
         {
             Random random = new();
