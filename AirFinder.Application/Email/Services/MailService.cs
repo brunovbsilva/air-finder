@@ -17,10 +17,12 @@ namespace AirFinder.Application.Email.Services
 
         public async Task SendEmailAsync(MailRequest mailRequest)
         {
-            var email = new MimeMessage();
-            email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
+            var email = new MimeMessage
+            {
+                Sender = MailboxAddress.Parse(_mailSettings.Mail),
+                Subject = mailRequest.Subject
+            };
             email.To.Add(MailboxAddress.Parse(mailRequest.ToMail));
-            email.Subject = mailRequest.Subject;
             var builder = new BodyBuilder();
             if(mailRequest.Attachments != null) 
             {

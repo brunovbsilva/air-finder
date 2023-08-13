@@ -10,6 +10,8 @@ using AirFinder.Domain.Users.Models.Requests;
 using AirFinder.Domain.Users.Models.Responses;
 using AirFinder.Infra.Security;
 using AirFinder.Infra.Security.Request;
+using AirFinder.Infra.Utils.Constants;
+using SendGrid.Helpers.Errors.Model;
 
 namespace AirFinder.Application.Users.Services
 {
@@ -35,9 +37,9 @@ namespace AirFinder.Application.Users.Services
         #region Helpers
         private async Task InsertAsync(User item)
         {
-            if (await _userRepository.GetByLoginAsync(item.Login) != null) throw new ArgumentException(nameof(item.Login) + " already exists.");
-            if (await _personRepository.GetByCPFAsync(item.Person!.CPF) != null) throw new ArgumentException(nameof(item.Person.CPF) + " already exists.");
-            if (await _personRepository.GetByEmailAsync(item.Person.Email) != null) throw new ArgumentException(nameof(item.Person.Email) + " already exists.");
+            if (await _userRepository.GetByLoginAsync(item.Login) != null) throw new LoginException();
+            if (await _personRepository.GetByCPFAsync(item.Person!.CPF) != null) throw new CPFException();
+            if (await _personRepository.GetByEmailAsync(item.Person.Email) != null) throw new EmailException();
 
             await _userRepository.InsertWithSaveChangesAsync(item);
         }
@@ -70,8 +72,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> CreateAnotherUserAsync(CreateAnotherUserRequest request, Guid userId)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIdAsync(userId);
-            if(user == null) throw new ArgumentException("User not found");
+            var user = await _userRepository.GetByIdAsync(userId) ?? throw new NotFoundUserException();
             var newUser = new User
             {
                 Login = request.Login.ToLower(),
@@ -90,7 +91,7 @@ namespace AirFinder.Application.Users.Services
         => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByLoginAsync(login.ToLower());
-            if (user == null || user.Password != password) throw new ArgumentException("Wrong credentials.");
+            if (user == null || user.Password != password) throw new WrongCredentialsException();
 
             var tokenRequest = new CreateTokenRequest
             {
@@ -114,9 +115,8 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> UpdatePasswordAsync(Guid id, UpdatePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIdAsync(id);
-            if (user == null) throw new ArgumentException("User not found.");
-            if (user.Password != request.CurrentPassword) throw new ArgumentException("Incorrect password.");
+            var user = await _userRepository.GetByIdAsync(id) ?? throw new NotFoundUserException();
+            if (user.Password != request.CurrentPassword) throw new WrongCredentialsException();
 
             user.Password = request.NewPassword;
             await _userRepository.UpdateWithSaveChangesAsync(user);
@@ -126,16 +126,15 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> SendTokenEmailAsync(string email)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(email.ToLower());
-            if (user == null) throw new ArgumentException("User not found.");
+            var user = await _userRepository.GetByEmailAsync(email.ToLower()) ?? throw new NotFoundUserException();
 
             var token = GeneratePasswordToken();
             await _tokenRepository.InsertWithSaveChangesAsync(new TokenControl(user.Id, token, true, DateTime.Now.Ticks, DateTime.Now.AddMinutes(30).Ticks));
             await _mailService.SendEmailAsync(new MailRequest
             {
                 ToMail = email,
-                Body = ForgotPasswordEmailBody(user.Person!.Name, token),
-                Subject = "Solicitação de token para alteração de senha"
+                Body = string.Format(Emails.ForgotPasswordEmail, user.Person!.Name, token),
+                Subject = Emails.ForgotPasswordSubject
             });
             return new GenericResponse();
         });
@@ -143,11 +142,11 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> VerifyTokenAsync(VerifyTokenRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email.ToLower());
-            if (user == null) throw new ArgumentException(String.Concat("User with email", nameof(request.Email), " not found"));
+            var user = await _userRepository.GetByEmailAsync(request.Email.ToLower()) ?? throw new NotFoundUserException();
 
             var token = await _tokenRepository.GetByToken(request.Token);
-            if (token == null || token.IdUser != user.Id) throw new ArgumentException("Token inválido");
+
+            if (token == null || token.IdUser != user.Id) throw new InvalidTokenException();
 
             token.Valid = false;
             await _tokenRepository.UpdateWithSaveChangesAsync(token);
@@ -157,8 +156,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> ChangePasswordAsync(ChangePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email.ToLower());
-            if(user == null) throw new ArgumentException("User not found.");
+            var user = await _userRepository.GetByEmailAsync(request.Email.ToLower()) ?? throw new NotFoundUserException();
 
             return await UpdatePasswordAsync(user.Id, new UpdatePasswordRequest { CurrentPassword = user.Password, NewPassword = request.NewPassword });
         });
@@ -168,8 +166,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse?> DeleteUserAsync(Guid id)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIdAsync(id);
-            if (user == null) throw new ArgumentException("User not found.");
+            var user = await _userRepository.GetByIdAsync(id) ?? throw new NotFoundUserException();
 
             await _userRepository.DeleteAsync(user.Id);
             await _personRepository.DeleteAsync(user.IdPerson);
@@ -183,29 +180,6 @@ namespace AirFinder.Application.Users.Services
             Random random = new();
             int token = random.Next(0, 999999);
             return token.ToString("D6");
-        }
-
-        private static string ForgotPasswordEmailBody(string name, string token)
-        {
-            return string.Format(@"<!DOCTYPE html>
-                <html>
-                <head>
-	                <meta charset=""UTF-8"">
-	                <title>Seu token para alteração de senha</title>
-                </head>
-                <body>
-	                <h1>Seu token para alteração de senha</h1>
-	                <p>Prezado(a) {0},</p>
-	                <p>Recebemos sua solicitação de alteração de senha para sua conta. Para prosseguir com a alteração de senha, utilize o seguinte token de 6 dígitos:</p>
-	                <p style=""font-size: 24px; font-weight: bold;"">{1}</p>
-	                <p>Este token é válido por 30 minutos a partir do recebimento deste e-mail. Por favor, não compartilhe este token com ninguém, pois é exclusivo para você. Após a expiração do prazo, o token não poderá ser utilizado e você precisará solicitar um novo token de alteração de senha.</p>
-	                <p>Se você não solicitou esta alteração de senha, por favor, ignore este e-mail e entre em contato conosco imediatamente para proteger sua conta.</p>
-	                <p>Se tiver alguma dúvida ou preocupação, por favor, não hesite em nos contatar.</p>
-	                <br>
-	                <p>Atenciosamente,</p>
-	                <p>Air Finder</p>
-                </body>
-                </html>", name, token);
         }
         #endregion
     }

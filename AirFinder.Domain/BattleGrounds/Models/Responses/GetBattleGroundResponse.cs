@@ -5,6 +5,6 @@ namespace AirFinder.Domain.BattleGrounds.Models.Responses
 {
     public class GetBattleGroundResponse : BaseResponse
     {
-        public List<BattleGroundDto> Battlegrounds { get; set; }
+        public List<BattleGroundDto> Battlegrounds { get; set; } = new List<BattleGroundDto>();
     }
 }

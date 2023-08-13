@@ -78,7 +78,7 @@ namespace AirFinder.Application.Games.Services
             var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
             var game = await _gameRepository.GetByIDAsync(gameId) ?? throw new NotFoundGameException();
             if (game.IdCreator == user.Id) throw new MethodNotAllowedException();
-            GameLog gameLog = new GameLog(gameId, userId);
+            var gameLog = new GameLog(gameId, userId);
             await _gameLogRepository.InsertWithSaveChangesAsync(gameLog);
             return new GenericResponse();
         });

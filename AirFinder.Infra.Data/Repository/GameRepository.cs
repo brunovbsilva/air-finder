@@ -49,7 +49,7 @@ namespace AirFinder.Infra.Data.Repository
                     ImageUrl = bgd.ImageUrl,
                     Verified = usd.Roll == UserRoll.Admnistrator || usd.Roll == UserRoll.ContentCreator,
                     CanDelete = g.IdCreator == userId,
-                    GamePaymentStatus = gld.PaymentDate != null ? GamePaymentStatus.Paid : gld.JoinDate != null ? GamePaymentStatus.Joined : GamePaymentStatus.NotJoined
+                    GamePaymentStatus = gld.PaymentDate != null ? GamePaymentStatus.Paid : gld != null ? GamePaymentStatus.Joined : GamePaymentStatus.NotJoined
                 })
                 .Where(x =>
                     (request.GameStatus == GameStatus.Created && x.DateFrom > ticksNow) ||

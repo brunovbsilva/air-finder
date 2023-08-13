@@ -14,10 +14,10 @@ namespace AirFinder.Domain.Tokens
             ExpirationDate = expirationDate;
         }
 
-        public Guid IdUser { get; set; }
-        public string Token { get; set; }
-        public bool Valid { get; set; }
-        public long SentDate { get; set; }
+        public Guid IdUser { get; set; } = Guid.Empty;
+        public string Token { get; set; } = string.Empty;
+        public bool Valid { get; set; } = false;
+        public long SentDate { get; set; } = 0;
         public long? ExpirationDate { get; set; }
 
     }
