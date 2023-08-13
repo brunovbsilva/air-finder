@@ -6,7 +6,6 @@ using AirFinder.Domain.Users.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.ComponentModel;
 
 namespace AirFinder.API.Controllers
 {

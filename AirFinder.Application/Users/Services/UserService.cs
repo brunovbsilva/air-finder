@@ -35,7 +35,7 @@ namespace AirFinder.Application.Users.Services
         }
         
         #region CreateUserAsync
-        public async Task<BaseResponse?> CreateUserAsync(UserRequest request)
+        public async Task<BaseResponse> CreateUserAsync(UserRequest request)
         => await ExecuteAsync(async () =>
         {
             await InsertAsync(new User(request));
@@ -44,7 +44,7 @@ namespace AirFinder.Application.Users.Services
         #endregion
 
         #region CreateAnotherUserAsync
-        public async Task<BaseResponse?> CreateUserAdminAsync(UserAdminRequest request, Guid userId)
+        public async Task<BaseResponse> CreateUserAdminAsync(UserAdminRequest request, Guid userId)
         => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByIdAsync(userId);
@@ -56,7 +56,7 @@ namespace AirFinder.Application.Users.Services
         #endregion
 
         #region Login
-        public async Task<LoginResponse?> LoginAsync(LoginRequest request)
+        public async Task<LoginResponse> LoginAsync(LoginRequest request)
         => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByLoginAsync(request.Login.ToLower());
@@ -81,7 +81,7 @@ namespace AirFinder.Application.Users.Services
         #endregion
 
         #region Update Password
-        public async Task<BaseResponse?> UpdatePasswordAsync(Guid id, UpdatePasswordRequest request)
+        public async Task<BaseResponse> UpdatePasswordAsync(Guid id, UpdatePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByIdAsync(id);
@@ -92,7 +92,7 @@ namespace AirFinder.Application.Users.Services
             return new GenericResponse();
         });
 
-        public async Task<BaseResponse?> SendTokenEmailAsync(string email)
+        public async Task<BaseResponse> SendTokenEmailAsync(string email)
         => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByEmailAsync(email.ToLower()) ?? throw new NotFoundUserException();
@@ -108,7 +108,7 @@ namespace AirFinder.Application.Users.Services
             return new GenericResponse();
         });
 
-        public async Task<BaseResponse?> VerifyTokenAsync(VerifyTokenRequest request)
+        public async Task<BaseResponse> VerifyTokenAsync(VerifyTokenRequest request)
         => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByEmailAsync(request.Email.ToLower()) ?? throw new NotFoundUserException();
@@ -121,7 +121,7 @@ namespace AirFinder.Application.Users.Services
             return new GenericResponse();
         });
 
-        public async Task<BaseResponse?> ChangePasswordAsync(ChangePasswordRequest request)
+        public async Task<BaseResponse> ChangePasswordAsync(ChangePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByEmailAsync(request.Email.ToLower()) ?? throw new NotFoundUserException();
@@ -131,7 +131,7 @@ namespace AirFinder.Application.Users.Services
         #endregion
         
         #region Delete
-        public async Task<BaseResponse?> DeleteUserAsync(Guid id)
+        public async Task<BaseResponse> DeleteUserAsync(Guid id)
         => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByIdAsync(id) ?? throw new NotFoundUserException();

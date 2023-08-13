@@ -6,9 +6,9 @@ namespace AirFinder.Application.Battlegrounds.Services
 {
     public interface IBattlegroundService
     {
-        Task<GetBattlegroundsResponse?> GetBattlegrounds(Guid id);
-        Task<BaseResponse?> CreateBattleground(Guid id, CreateBattlegroundRequest request);
-        Task<BaseResponse?> DeleteBattleground(Guid id);
-        Task<BaseResponse?> UpdateBattleground(Guid id, UpdateBattlegroundRequest request);
+        Task<GetBattlegroundsResponse> GetBattlegrounds(Guid id);
+        Task<BaseResponse> CreateBattleground(Guid id, CreateBattlegroundRequest request);
+        Task<BaseResponse> DeleteBattleground(Guid id);
+        Task<BaseResponse> UpdateBattleground(Guid id, UpdateBattlegroundRequest request);
     }
 }

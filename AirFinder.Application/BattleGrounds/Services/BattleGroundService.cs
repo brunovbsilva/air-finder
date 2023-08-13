@@ -29,7 +29,7 @@ namespace AirFinder.Application.Battlegrounds.Services
             _userRepository = userRepository;
             _imgurService = imgurService;
         }
-        public async Task<BaseResponse?> CreateBattleground(Guid id, CreateBattlegroundRequest request) => await ExecuteAsync(
+        public async Task<BaseResponse> CreateBattleground(Guid id, CreateBattlegroundRequest request) => await ExecuteAsync(
             async () => {
                 UploadResponse imgurResponse = await _imgurService.Upload(request.ImageBase64);
                 var battleground = new Battleground(request.Name, imgurResponse!.Data.Link, request.CEP, request.Address, request.Number, request.City, request.State, request.Country, id);
@@ -38,7 +38,7 @@ namespace AirFinder.Application.Battlegrounds.Services
             }
         );
 
-        public async Task<BaseResponse?> DeleteBattleground(Guid id) => await ExecuteAsync(
+        public async Task<BaseResponse> DeleteBattleground(Guid id) => await ExecuteAsync(
             async () => {
                 var battleground = await _battlegroundRepository.GetByIDAsync(id) ?? throw new NotFoundBattlegroundException();
                 await _battlegroundRepository.DeleteAsync(id);
@@ -46,7 +46,7 @@ namespace AirFinder.Application.Battlegrounds.Services
             }
         );
 
-        public async Task<GetBattlegroundsResponse?> GetBattlegrounds(Guid id) => await ExecuteAsync(
+        public async Task<GetBattlegroundsResponse> GetBattlegrounds(Guid id) => await ExecuteAsync(
             async () => {
                 var user = await _userRepository.GetByIDAsync(id) ?? throw new NotFoundUserException();
                 var battleground = await _battlegroundRepository.GetAll().Where(x => x.IdCreator == id).Select(x => (BattlegroundDto)x).ToListAsync();
@@ -54,7 +54,7 @@ namespace AirFinder.Application.Battlegrounds.Services
             }
         );
 
-        public async Task<BaseResponse?> UpdateBattleground(Guid id, UpdateBattlegroundRequest request) => await ExecuteAsync(
+        public async Task<BaseResponse> UpdateBattleground(Guid id, UpdateBattlegroundRequest request) => await ExecuteAsync(
             async () => { 
                 var battleground = await _battlegroundRepository.GetByIDAsync(id) ?? throw new NotFoundBattlegroundException();
 
