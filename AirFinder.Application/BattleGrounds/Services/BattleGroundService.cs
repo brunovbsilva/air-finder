@@ -57,18 +57,11 @@ namespace AirFinder.Application.BattleGrounds.Services
 
         public async Task<BaseResponse?> UpdateBattleGround(Guid id, UpdateBattleGroundRequest request) => await ExecuteAsync(
             async () => { 
-                var battleGround = await _battleGroundRepository.GetByIDAsync(id) ?? throw new NotFoundBattlegroundException();
+                var battleground = await _battleGroundRepository.GetByIDAsync(id) ?? throw new NotFoundBattlegroundException();
 
-                battleGround.Name = request.Name;
-                battleGround.ImageUrl = request.ImageUrl;
-                battleGround.CEP = request.CEP;
-                battleGround.Address = request.Address;
-                battleGround.Number = request.Number;
-                battleGround.City = request.City;
-                battleGround.State = request.State;
-                battleGround.Country = request.Country;
+                battleground.Update(request);
 
-                await _battleGroundRepository.UpdateWithSaveChangesAsync(battleGround);
+                await _battleGroundRepository.UpdateWithSaveChangesAsync(battleground);
                 return new GenericResponse(); 
             }
         );

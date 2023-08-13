@@ -1,4 +1,5 @@
-﻿using AirFinder.Domain.Common;
+﻿using AirFinder.Domain.BattleGrounds.Models.Requests;
+using AirFinder.Domain.Common;
 using AirFinder.Domain.Users;
 
 namespace AirFinder.Domain.BattleGrounds
@@ -29,5 +30,17 @@ namespace AirFinder.Domain.BattleGrounds
         public string Country { get; set; } = String.Empty;
         public Guid IdCreator { get; set; }
         public virtual User? Creator { get; set; }
+
+        public void Update(UpdateBattleGroundRequest request)
+        {
+            Name = request.Name;
+            ImageUrl = request.ImageUrl;
+            CEP = request.CEP;
+            Address = request.Address;
+            Number = request.Number;
+            City = request.City;
+            State = request.State;
+            Country = request.Country;
+        }
     }
 }
