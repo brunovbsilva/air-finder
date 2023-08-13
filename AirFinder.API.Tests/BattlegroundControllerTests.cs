@@ -1,30 +1,28 @@
-﻿using AirFinder.Application.BattleGrounds.Services;
-using AirFinder.Domain.BattleGrounds.Models.Requests;
-using AirFinder.Domain.BattleGrounds.Models.Responses;
+﻿using AirFinder.Application.Battlegrounds.Services;
+using AirFinder.Domain.Battlegrounds.Models.Requests;
+using AirFinder.Domain.Battlegrounds.Models.Responses;
 using AirFinder.Domain.Common;
 using AirFinder.Domain.SeedWork.Notification;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
 using static AirFinder.Domain.SeedWork.Notification.NotificationModel;
 
 namespace AirFinder.API.Tests
 {
     public class BattlegroundControllerTests
     {
-        readonly Mock<IBattleGroundService> _battleGroundService;
+        readonly Mock<IBattlegroundService> _battlegroundService;
         readonly Mock<INotification> _notification;
         readonly Mock<HttpContext> _httpContext;
         readonly BattlegroundController _battlegroundController;
 
         public BattlegroundControllerTests()
         {
-            _battleGroundService = new Mock<IBattleGroundService>();
+            _battlegroundService = new Mock<IBattlegroundService>();
             _notification = new Mock<INotification>();
             _httpContext = new Mock<HttpContext>();
             SetupHttpContext();
 
-            _battlegroundController = new BattlegroundController(_notification.Object, _battleGroundService.Object)
+            _battlegroundController = new BattlegroundController(_notification.Object, _battlegroundService.Object)
             {
                 ControllerContext = new ControllerContext { HttpContext = _httpContext.Object }
             };
@@ -55,8 +53,8 @@ namespace AirFinder.API.Tests
         public async Task GetBattlegrounds_ShouldReturnOk()
         {
             // Arrange
-            var battleGrounds = new GetBattleGroundResponse();
-            _battleGroundService.Setup(x => x.GetBattleGrounds(It.IsAny<Guid>())).ReturnsAsync(battleGrounds);
+            var battlegrounds = new GetBattlegroundsResponse();
+            _battlegroundService.Setup(x => x.GetBattlegrounds(It.IsAny<Guid>())).ReturnsAsync(battlegrounds);
 
             // Act
             var result = await _battlegroundController.GetBattlegrounds();
@@ -69,8 +67,8 @@ namespace AirFinder.API.Tests
         public async Task GetBattlegrounds_NoContent()
         {
             // Arrange
-            GetBattleGroundResponse? battleGrounds = null;
-            _battleGroundService.Setup(x => x.GetBattleGrounds(It.IsAny<Guid>())).ReturnsAsync(battleGrounds);
+            GetBattlegroundsResponse? battlegrounds = null;
+            _battlegroundService.Setup(x => x.GetBattlegrounds(It.IsAny<Guid>())).ReturnsAsync(battlegrounds);
 
             // Act
             var result = await _battlegroundController.GetBattlegrounds();
@@ -85,9 +83,9 @@ namespace AirFinder.API.Tests
         public async Task CreateBattleground_ShouldReturnOk()
         {
             // Arrange
-            var request = new CreateBattleGroundRequest();
+            var request = new CreateBattlegroundRequest();
             var response = new GenericResponse();
-            _battleGroundService.Setup(x => x.CreateBattleGround(It.IsAny<Guid>(), It.IsAny<CreateBattleGroundRequest>())).ReturnsAsync(response);
+            _battlegroundService.Setup(x => x.CreateBattleground(It.IsAny<Guid>(), It.IsAny<CreateBattlegroundRequest>())).ReturnsAsync(response);
 
             // Act
             var result = await _battlegroundController.CreateBattleground(request);
@@ -100,9 +98,9 @@ namespace AirFinder.API.Tests
         public async Task CreateBattleground_NoContent()
         {
             // Arrange
-            var request = new CreateBattleGroundRequest();
+            var request = new CreateBattlegroundRequest();
             BaseResponse? response = null;
-            _battleGroundService.Setup(x => x.CreateBattleGround(It.IsAny<Guid>(), It.IsAny<CreateBattleGroundRequest>())).ReturnsAsync(response);
+            _battlegroundService.Setup(x => x.CreateBattleground(It.IsAny<Guid>(), It.IsAny<CreateBattlegroundRequest>())).ReturnsAsync(response);
 
             // Act
             var result = await _battlegroundController.CreateBattleground(request);
@@ -119,7 +117,7 @@ namespace AirFinder.API.Tests
             // Arrange
             var request = Guid.NewGuid();
             var response = new GenericResponse();
-            _battleGroundService.Setup(x => x.DeleteBattleGround(It.IsAny<Guid>())).ReturnsAsync(response);
+            _battlegroundService.Setup(x => x.DeleteBattleground(It.IsAny<Guid>())).ReturnsAsync(response);
 
             // Act
             var result = await _battlegroundController.DeleteBattleground(request);
@@ -134,7 +132,7 @@ namespace AirFinder.API.Tests
             // Arrange
             var request = Guid.NewGuid();
             BaseResponse? response = null;
-            _battleGroundService.Setup(x => x.DeleteBattleGround(It.IsAny<Guid>())).ReturnsAsync(response);
+            _battlegroundService.Setup(x => x.DeleteBattleground(It.IsAny<Guid>())).ReturnsAsync(response);
 
             // Act
             var result = await _battlegroundController.DeleteBattleground(request);
@@ -150,9 +148,9 @@ namespace AirFinder.API.Tests
         {
             // Arrange
             var requestGuid = Guid.NewGuid();
-            var request = new UpdateBattleGroundRequest();
+            var request = new UpdateBattlegroundRequest();
             var response = new GenericResponse();
-            _battleGroundService.Setup(x => x.UpdateBattleGround(It.IsAny<Guid>(), It.IsAny<UpdateBattleGroundRequest>())).ReturnsAsync(response);
+            _battlegroundService.Setup(x => x.UpdateBattleground(It.IsAny<Guid>(), It.IsAny<UpdateBattlegroundRequest>())).ReturnsAsync(response);
 
             // Act
             var result = await _battlegroundController.UpdateBattleground(requestGuid, request);
@@ -166,9 +164,9 @@ namespace AirFinder.API.Tests
         {
             // Arrange
             var requestGuid = Guid.NewGuid();
-            var request = new UpdateBattleGroundRequest();
+            var request = new UpdateBattlegroundRequest();
             BaseResponse? response = null;
-            _battleGroundService.Setup(x => x.UpdateBattleGround(It.IsAny<Guid>(), It.IsAny<UpdateBattleGroundRequest>())).ReturnsAsync(response);
+            _battlegroundService.Setup(x => x.UpdateBattleground(It.IsAny<Guid>(), It.IsAny<UpdateBattlegroundRequest>())).ReturnsAsync(response);
 
             // Act
             var result = await _battlegroundController.UpdateBattleground(requestGuid, request);

@@ -25,7 +25,7 @@ namespace AirFinder.Infra.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("AirFinder.Domain.BattleGrounds.BattleGround", b =>
+            modelBuilder.Entity("AirFinder.Domain.Battlegrounds.Battleground", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -80,7 +80,7 @@ namespace AirFinder.Infra.Data.Migrations
 
                     b.HasIndex("IdCreator");
 
-                    b.ToTable("BattleGrounds", (string)null);
+                    b.ToTable("Battlegrounds", (string)null);
                 });
 
             modelBuilder.Entity("AirFinder.Domain.GameLogs.GameLog", b =>
@@ -133,9 +133,9 @@ namespace AirFinder.Infra.Data.Migrations
                         .HasColumnType("varchar(max)")
                         .HasColumnName("Description");
 
-                    b.Property<Guid>("IdBattleGround")
+                    b.Property<Guid>("IdBattleground")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("IdBattleGround");
+                        .HasColumnName("IdBattleground");
 
                     b.Property<Guid>("IdCreator")
                         .HasColumnType("uniqueidentifier")
@@ -160,7 +160,7 @@ namespace AirFinder.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdBattleGround");
+                    b.HasIndex("IdBattleground");
 
                     b.HasIndex("IdCreator");
 
@@ -275,7 +275,7 @@ namespace AirFinder.Infra.Data.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("AirFinder.Domain.BattleGrounds.BattleGround", b =>
+            modelBuilder.Entity("AirFinder.Domain.Battlegrounds.Battleground", b =>
                 {
                     b.HasOne("AirFinder.Domain.Users.User", "Creator")
                         .WithMany()
@@ -307,9 +307,9 @@ namespace AirFinder.Infra.Data.Migrations
 
             modelBuilder.Entity("AirFinder.Domain.Games.Game", b =>
                 {
-                    b.HasOne("AirFinder.Domain.BattleGrounds.BattleGround", "BattleGroud")
+                    b.HasOne("AirFinder.Domain.Battlegrounds.Battleground", "BattleGroud")
                         .WithMany()
-                        .HasForeignKey("IdBattleGround")
+                        .HasForeignKey("IdBattleground")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -1,4 +1,4 @@
-﻿using AirFinder.Domain.BattleGrounds.Models.Dtos;
+﻿using AirFinder.Domain.Battlegrounds.Models.Dtos;
 using AirFinder.Domain.Common;
 
 namespace AirFinder.Domain.Games.Models.Dtos
@@ -11,7 +11,7 @@ namespace AirFinder.Domain.Games.Models.Dtos
         public long DateUpTo { get; set; } = 0;
         public int MaxPlayers { get; set; } = 0;
         public Guid IdCreator { get; set; }
-        public BattleGroundDto? BattleGround { get; set; }
+        public BattlegroundDto? Battleground { get; set; }
 
         public static implicit operator GameDto(Game game)
         {
@@ -25,7 +25,7 @@ namespace AirFinder.Domain.Games.Models.Dtos
                 DateUpTo = game.MillisDateUpTo,
                 MaxPlayers = game.MaxPlayers,
                 IdCreator = game.IdCreator,
-                BattleGround = (BattleGroundDto)game.BattleGroud!
+                Battleground = (BattlegroundDto)game.BattleGroud!
             };
         }
     }

@@ -1,4 +1,4 @@
-﻿using AirFinder.Domain.BattleGrounds;
+﻿using AirFinder.Domain.Battlegrounds;
 using AirFinder.Domain.Common;
 using AirFinder.Domain.Games.Models.Enums;
 using AirFinder.Domain.Games.Models.Requests;
@@ -9,14 +9,14 @@ namespace AirFinder.Domain.Games
 {
     public class Game : BaseModel
     {
-        public Game(string name, string description, long millisDateFrom, long millisDateUpTo, int maxPlayers, Guid idBattleGround, Guid idCreator)
+        public Game(string name, string description, long millisDateFrom, long millisDateUpTo, int maxPlayers, Guid idBattleground, Guid idCreator)
         {
             Name = name;
             Description = description;
             MillisDateFrom = millisDateFrom;
             MillisDateUpTo = millisDateUpTo;
             MaxPlayers = maxPlayers;
-            IdBattleGround = idBattleGround;
+            IdBattleground = idBattleground;
             IdCreator = idCreator;
             BattleGroud = null;
             Creator = null;
@@ -28,7 +28,7 @@ namespace AirFinder.Domain.Games
             MillisDateFrom = request.DateFrom;
             MillisDateUpTo = request.DateUpTo;
             MaxPlayers = request.MaxPlayers ?? 0;
-            IdBattleGround = request.IdBattleground;
+            IdBattleground = request.IdBattleground;
             IdCreator = idCreator;
         }
         public Game() {}
@@ -37,9 +37,18 @@ namespace AirFinder.Domain.Games
         public long MillisDateFrom { get; set; } = 0;
         public long MillisDateUpTo { get; set; } = 0;
         public int MaxPlayers { get; set; } = 0;
-        public Guid IdBattleGround { get; set; }
+        public Guid IdBattleground { get; set; }
         public Guid IdCreator { get; set; }
-        public virtual BattleGround? BattleGroud { get; set; }
+        public virtual Battleground? BattleGroud { get; set; }
         public virtual User? Creator { get; set; }
+
+        public void Update(UpdateGameRequest request)
+        {
+            Name = request.Name;
+            Description = request.Description;
+            MillisDateFrom = request.DateFrom;
+            MillisDateUpTo = request.DateUpTo;
+            MaxPlayers = request.MaxPlayers;
+        }
     }
 }

@@ -1,13 +1,13 @@
-﻿using AirFinder.Domain.BattleGrounds;
+﻿using AirFinder.Domain.Battlegrounds;
 using AirFinder.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace AirFinder.Infra.Data.Repository
 {
-    public class BattleGroundRepository : BaseRepository<BattleGround>, IBattleGroundRepository
+    public class BattlegroundRepository : BaseRepository<Battleground>, IBattlegroundRepository
     {
         readonly IUnitOfWork _unitOfWork;
-        public BattleGroundRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
+        public BattlegroundRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

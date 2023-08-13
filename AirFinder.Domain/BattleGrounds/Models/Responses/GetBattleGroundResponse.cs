@@ -1,10 +1,10 @@
-﻿using AirFinder.Domain.BattleGrounds.Models.Dtos;
+﻿using AirFinder.Domain.Battlegrounds.Models.Dtos;
 using AirFinder.Domain.Common;
 
-namespace AirFinder.Domain.BattleGrounds.Models.Responses
+namespace AirFinder.Domain.Battlegrounds.Models.Responses
 {
-    public class GetBattleGroundResponse : BaseResponse
+    public class GetBattlegroundsResponse : BaseResponse
     {
-        public List<BattleGroundDto> Battlegrounds { get; set; } = new List<BattleGroundDto>();
+        public List<BattlegroundDto> Battlegrounds { get; set; } = new List<BattlegroundDto>();
     }
 }
