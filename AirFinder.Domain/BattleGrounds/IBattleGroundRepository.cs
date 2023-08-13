@@ -1,6 +1,6 @@
-﻿namespace AirFinder.Domain.BattleGrounds
+﻿namespace AirFinder.Domain.Battlegrounds
 {
-    public interface IBattleGroundRepository : IBaseRepository<BattleGround>
+    public interface IBattlegroundRepository : IBaseRepository<Battleground>
     {
     }
 }

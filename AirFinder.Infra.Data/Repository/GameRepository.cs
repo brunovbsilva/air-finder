@@ -1,5 +1,5 @@
 ﻿using Abp.Extensions;
-using AirFinder.Domain.BattleGrounds;
+using AirFinder.Domain.Battlegrounds;
 using AirFinder.Domain.GameLogs;
 using AirFinder.Domain.Games;
 using AirFinder.Domain.Games.Models.Dtos;
@@ -23,14 +23,14 @@ namespace AirFinder.Infra.Data.Repository
         public async Task<ListGamesResponse> getGameList(ListGamesRequest request, Guid userId)
         {
             var tbGame = _unitOfWork.Context.Set<Game>().AsNoTracking();
-            var tbBG = _unitOfWork.Context.Set<BattleGround>().AsNoTracking();
+            var tbBG = _unitOfWork.Context.Set<Battleground>().AsNoTracking();
             var tbUser = _unitOfWork.Context.Set<User>().AsNoTracking();
             var tbGameLog = _unitOfWork.Context.Set<GameLog>().AsNoTracking();
             var ticksNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             var query = (
                 from g in tbGame
-                join bg in tbBG on g.IdBattleGround equals bg.Id into BGs from bgd in BGs.DefaultIfEmpty()
+                join bg in tbBG on g.IdBattleground equals bg.Id into BGs from bgd in BGs.DefaultIfEmpty()
                 join u in tbUser on g.IdCreator equals u.Id into Us from usd in Us.DefaultIfEmpty()
                 join gl in tbGameLog on g.Id equals gl.GameId into GLs from gld in GLs.DefaultIfEmpty()
 

@@ -66,7 +66,7 @@ namespace AirFinder.Infra.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BattleGrounds",
+                name: "Battlegrounds",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newid()"),
@@ -82,9 +82,9 @@ namespace AirFinder.Infra.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BattleGrounds", x => x.Id);
+                    table.PrimaryKey("PK_Battlegrounds", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BattleGrounds_Users_IdCreator",
+                        name: "FK_Battlegrounds_Users_IdCreator",
                         column: x => x.IdCreator,
                         principalTable: "Users",
                         principalColumn: "Id");
@@ -100,16 +100,16 @@ namespace AirFinder.Infra.Data.Migrations
                     DateFrom = table.Column<long>(type: "bigint", nullable: false),
                     DateUpTo = table.Column<long>(type: "bigint", nullable: false),
                     MaxPlayers = table.Column<int>(type: "int", nullable: false),
-                    IdBattleGround = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdBattleground = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdCreator = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Games", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Games_BattleGrounds_IdBattleGround",
-                        column: x => x.IdBattleGround,
-                        principalTable: "BattleGrounds",
+                        name: "FK_Games_Battlegrounds_IdBattleground",
+                        column: x => x.IdBattleground,
+                        principalTable: "Battlegrounds",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -147,8 +147,8 @@ namespace AirFinder.Infra.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BattleGrounds_IdCreator",
-                table: "BattleGrounds",
+                name: "IX_Battlegrounds_IdCreator",
+                table: "Battlegrounds",
                 column: "IdCreator");
 
             migrationBuilder.CreateIndex(
@@ -162,9 +162,9 @@ namespace AirFinder.Infra.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Games_IdBattleGround",
+                name: "IX_Games_IdBattleground",
                 table: "Games",
-                column: "IdBattleGround");
+                column: "IdBattleground");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_IdCreator",
@@ -190,7 +190,7 @@ namespace AirFinder.Infra.Data.Migrations
                 name: "Games");
 
             migrationBuilder.DropTable(
-                name: "BattleGrounds");
+                name: "Battlegrounds");
 
             migrationBuilder.DropTable(
                 name: "Users");

@@ -1,67 +1,66 @@
 ﻿using AirFinder.Application.Email.Services;
 using AirFinder.Application.Imgur.Services;
-using AirFinder.Domain.BattleGrounds;
-using AirFinder.Domain.BattleGrounds.Models.Dtos;
-using AirFinder.Domain.BattleGrounds.Models.Requests;
-using AirFinder.Domain.BattleGrounds.Models.Responses;
+using AirFinder.Domain.Battlegrounds;
+using AirFinder.Domain.Battlegrounds.Models.Dtos;
+using AirFinder.Domain.Battlegrounds.Models.Requests;
+using AirFinder.Domain.Battlegrounds.Models.Responses;
 using AirFinder.Domain.Common;
 using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Domain.Users;
 using AirFinder.Infra.Http.ImgurService.Responses;
 using Microsoft.EntityFrameworkCore;
-using SendGrid.Helpers.Errors.Model;
 
-namespace AirFinder.Application.BattleGrounds.Services
+namespace AirFinder.Application.Battlegrounds.Services
 {
-    public class BattleGroundService : BaseService, IBattleGroundService
+    public class BattlegroundService : BaseService, IBattlegroundService
     {
-        readonly IBattleGroundRepository _battleGroundRepository;
+        readonly IBattlegroundRepository _battlegroundRepository;
         readonly IUserRepository _userRepository;
         readonly IImgurService _imgurService;
-        public BattleGroundService(
+        public BattlegroundService(
             INotification notification,
             IMailService mailService,
-            IBattleGroundRepository battleGroundRepository,
+            IBattlegroundRepository battlegroundRepository,
             IUserRepository userRepository,
             IImgurService imgurService
         ) : base(notification, mailService) 
         {
-            _battleGroundRepository = battleGroundRepository;
+            _battlegroundRepository = battlegroundRepository;
             _userRepository = userRepository;
             _imgurService = imgurService;
         }
-        public async Task<BaseResponse?> CreateBattleGround(Guid id, CreateBattleGroundRequest request) => await ExecuteAsync(
+        public async Task<BaseResponse?> CreateBattleground(Guid id, CreateBattlegroundRequest request) => await ExecuteAsync(
             async () => {
                 UploadResponse imgurResponse = await _imgurService.Upload(request.ImageBase64);
-                var battleGround = new BattleGround(request.Name, imgurResponse!.Data.Link, request.CEP, request.Address, request.Number, request.City, request.State, request.Country, id);
-                await _battleGroundRepository.InsertWithSaveChangesAsync(battleGround);
+                var battleground = new Battleground(request.Name, imgurResponse!.Data.Link, request.CEP, request.Address, request.Number, request.City, request.State, request.Country, id);
+                await _battlegroundRepository.InsertWithSaveChangesAsync(battleground);
                 return new GenericResponse();
             }
         );
 
-        public async Task<BaseResponse?> DeleteBattleGround(Guid id) => await ExecuteAsync(
+        public async Task<BaseResponse?> DeleteBattleground(Guid id) => await ExecuteAsync(
             async () => {
-                var battleGround = await _battleGroundRepository.GetByIDAsync(id) ?? throw new NotFoundBattlegroundException();
-                await _battleGroundRepository.DeleteAsync(id);
+                var battleground = await _battlegroundRepository.GetByIDAsync(id) ?? throw new NotFoundBattlegroundException();
+                await _battlegroundRepository.DeleteAsync(id);
                 return new GenericResponse();
             }
         );
 
-        public async Task<GetBattleGroundResponse?> GetBattleGrounds(Guid id) => await ExecuteAsync(
+        public async Task<GetBattlegroundsResponse?> GetBattlegrounds(Guid id) => await ExecuteAsync(
             async () => {
                 var user = await _userRepository.GetByIDAsync(id) ?? throw new NotFoundUserException();
-                var battleGround = await _battleGroundRepository.GetAll().Where(x => x.IdCreator == id).Select(x => (BattleGroundDto)x).ToListAsync();
-                return new GetBattleGroundResponse() { Battlegrounds = battleGround };
+                var battleground = await _battlegroundRepository.GetAll().Where(x => x.IdCreator == id).Select(x => (BattlegroundDto)x).ToListAsync();
+                return new GetBattlegroundsResponse() { Battlegrounds = battleground };
             }
         );
 
-        public async Task<BaseResponse?> UpdateBattleGround(Guid id, UpdateBattleGroundRequest request) => await ExecuteAsync(
+        public async Task<BaseResponse?> UpdateBattleground(Guid id, UpdateBattlegroundRequest request) => await ExecuteAsync(
             async () => { 
-                var battleground = await _battleGroundRepository.GetByIDAsync(id) ?? throw new NotFoundBattlegroundException();
+                var battleground = await _battlegroundRepository.GetByIDAsync(id) ?? throw new NotFoundBattlegroundException();
 
                 battleground.Update(request);
 
-                await _battleGroundRepository.UpdateWithSaveChangesAsync(battleground);
+                await _battlegroundRepository.UpdateWithSaveChangesAsync(battleground);
                 return new GenericResponse(); 
             }
         );

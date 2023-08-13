@@ -1,12 +1,12 @@
-﻿using AirFinder.Domain.BattleGrounds.Models.Requests;
+﻿using AirFinder.Domain.Battlegrounds.Models.Requests;
 using AirFinder.Domain.Common;
 using AirFinder.Domain.Users;
 
-namespace AirFinder.Domain.BattleGrounds
+namespace AirFinder.Domain.Battlegrounds
 {
-    public class BattleGround : BaseModel
+    public class Battleground : BaseModel
     {
-        public BattleGround(string name, string imageUrl, string cep, string address, int number, string city, string state, string country, Guid idCreator)
+        public Battleground(string name, string imageUrl, string cep, string address, int number, string city, string state, string country, Guid idCreator)
         {
             Name = name;
             ImageUrl = imageUrl;
@@ -19,7 +19,7 @@ namespace AirFinder.Domain.BattleGrounds
             IdCreator = idCreator;
             Creator = null;
         }
-        public BattleGround() { }
+        public Battleground() { }
         public string Name { get; set; } = String.Empty;
         public string ImageUrl { get; set; } = String.Empty;
         public string CEP { get; set; } = String.Empty;
@@ -31,7 +31,7 @@ namespace AirFinder.Domain.BattleGrounds
         public Guid IdCreator { get; set; }
         public virtual User? Creator { get; set; }
 
-        public void Update(UpdateBattleGroundRequest request)
+        public void Update(UpdateBattlegroundRequest request)
         {
             Name = request.Name;
             ImageUrl = request.ImageUrl;

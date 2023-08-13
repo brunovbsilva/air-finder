@@ -1,6 +1,6 @@
-﻿namespace AirFinder.Domain.BattleGrounds.Models.Requests
+﻿namespace AirFinder.Domain.Battlegrounds.Models.Requests
 {
-    public class UpdateBattleGroundRequest
+    public class UpdateBattlegroundRequest
     {
         public string Name { get; set; } = String.Empty;
         public string ImageUrl { get; set; } = String.Empty;

@@ -1,8 +1,8 @@
 ﻿using AirFinder.Domain.Common;
 
-namespace AirFinder.Domain.BattleGrounds.Models.Dtos
+namespace AirFinder.Domain.Battlegrounds.Models.Dtos
 {
-    public class BattleGroundDto : BaseModel
+    public class BattlegroundDto : BaseModel
     {
         public string Name { get; set; } = String.Empty;
         public string ImageUrl { get; set; } = String.Empty;
@@ -14,10 +14,10 @@ namespace AirFinder.Domain.BattleGrounds.Models.Dtos
         public string Country { get; set; } = String.Empty;
         public Guid IdCreator { get; set; }
 
-        public static implicit operator BattleGroundDto(BattleGround bg)
+        public static implicit operator BattlegroundDto(Battleground bg)
         {
-            if (bg == null) return new BattleGroundDto();
-            return new BattleGroundDto
+            if (bg == null) return new BattlegroundDto();
+            return new BattlegroundDto
             {
                 Id = bg.Id,
                 Name = bg.Name,

@@ -1,5 +1,5 @@
 ﻿using AirFinder.Application.Email.Services;
-using AirFinder.Domain.BattleGrounds;
+using AirFinder.Domain.Battlegrounds;
 using AirFinder.Domain.Common;
 using AirFinder.Domain.GameLogs;
 using AirFinder.Domain.Games;
@@ -17,20 +17,20 @@ namespace AirFinder.Application.Games.Services
     {
         readonly IUserRepository _userRepository;
         readonly IGameRepository _gameRepository;
-        readonly IBattleGroundRepository _battleGroundRepository;
+        readonly IBattlegroundRepository _battlegroundRepository;
         readonly IGameLogRepository _gameLogRepository;
         public GameService(
             INotification notification,
             IMailService mailService,
             IUserRepository userRepository,
             IGameRepository gameRepository,
-            IBattleGroundRepository battleGroundRepository,
+            IBattlegroundRepository battlegroundRepository,
             IGameLogRepository gameLogRepository
         ) : base(notification, mailService) 
         {
             _userRepository = userRepository;
             _gameRepository = gameRepository;
-            _battleGroundRepository = battleGroundRepository;
+            _battlegroundRepository = battlegroundRepository;
             _gameLogRepository = gameLogRepository;
         }
 
@@ -38,7 +38,7 @@ namespace AirFinder.Application.Games.Services
         public async Task<BaseResponse?> CreateGame(CreateGameRequest request, Guid userId) => await ExecuteAsync(async () =>
         {
             var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
-            var bg = await _battleGroundRepository.GetByIDAsync(request.IdBattleground) ?? throw new NotFoundBattlegroundException();
+            var bg = await _battlegroundRepository.GetByIDAsync(request.IdBattleground) ?? throw new NotFoundBattlegroundException();
             await _gameRepository.InsertWithSaveChangesAsync(new Game(request, userId));
             return new GenericResponse();
         });
