@@ -40,18 +40,20 @@ namespace AirFinder.API.Controllers
         [SwaggerOperation(Summary = "Delete a battleground")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status405MethodNotAllowed)]
         public async Task<IActionResult> DeleteBattleground(Guid id)
         {
-            return Response(await _battlegroundService.DeleteBattleground(id));
+            return Response(await _battlegroundService.DeleteBattleground(GetUserId(HttpContext), id));
         }
 
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Update a battleground")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status405MethodNotAllowed)]
         public async Task<IActionResult> UpdateBattleground([FromRoute] Guid id, [FromBody] UpdateBattlegroundRequest request)
         {
-            return Response(await _battlegroundService.UpdateBattleground(id, request));
+            return Response(await _battlegroundService.UpdateBattleground(GetUserId(HttpContext), id, request));
         }
     }
 }
