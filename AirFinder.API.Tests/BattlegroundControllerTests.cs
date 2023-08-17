@@ -80,7 +80,7 @@ namespace AirFinder.API.Tests
             // Arrange
             var request = Guid.NewGuid();
             var response = new GenericResponse();
-            _battlegroundService.Setup(x => x.DeleteBattleground(It.IsAny<Guid>())).ReturnsAsync(response);
+            _battlegroundService.Setup(x => x.DeleteBattleground(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(response);
 
             // Act
             var result = await _battlegroundController.DeleteBattleground(request);
@@ -91,6 +91,7 @@ namespace AirFinder.API.Tests
 
         [Theory]
         [InlineData(ENotificationType.BadRequestError)]
+        [InlineData(ENotificationType.NotAllowed)]
         public async Task DeleteBattleground_Errors(ENotificationType notificationType)
         {
             // Arrange
@@ -112,7 +113,7 @@ namespace AirFinder.API.Tests
             var requestGuid = Guid.NewGuid();
             var request = new UpdateBattlegroundRequest();
             var response = new GenericResponse();
-            _battlegroundService.Setup(x => x.UpdateBattleground(It.IsAny<Guid>(), It.IsAny<UpdateBattlegroundRequest>())).ReturnsAsync(response);
+            _battlegroundService.Setup(x => x.UpdateBattleground(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<UpdateBattlegroundRequest>())).ReturnsAsync(response);
 
             // Act
             var result = await _battlegroundController.UpdateBattleground(requestGuid, request);
@@ -123,6 +124,7 @@ namespace AirFinder.API.Tests
 
         [Theory]
         [InlineData(ENotificationType.BadRequestError)]
+        [InlineData(ENotificationType.NotAllowed)]
         public async Task UpdateBattleground_Errors(ENotificationType notificationType)
         {
             // Arrange
