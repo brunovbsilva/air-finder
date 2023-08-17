@@ -20,11 +20,10 @@ namespace AirFinder.Application.Battlegrounds.Services
         readonly IImgurService _imgurService;
         public BattlegroundService(
             INotification notification,
-            IMailService mailService,
             IBattlegroundRepository battlegroundRepository,
             IUserRepository userRepository,
             IImgurService imgurService
-        ) : base(notification, mailService) 
+        ) : base(notification) 
         {
             _battlegroundRepository = battlegroundRepository;
             _userRepository = userRepository;

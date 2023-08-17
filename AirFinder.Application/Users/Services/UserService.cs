@@ -12,6 +12,7 @@ using AirFinder.Infra.Security;
 using AirFinder.Infra.Security.Request;
 using AirFinder.Infra.Utils.Constants;
 using SendGrid.Helpers.Errors.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace AirFinder.Application.Users.Services
 {
@@ -21,17 +22,22 @@ namespace AirFinder.Application.Users.Services
         readonly IPersonRepository _personRepository;
         readonly ITokenRepository _tokenRepository;
         readonly IJwtService _jwtService;
-        public UserService(IUserRepository userRepository,
+        readonly IMailService _mailService;
+
+        public UserService(
+            INotification notification,
+            IUserRepository userRepository,
             IPersonRepository personRepository,
             ITokenRepository tokenRepository,
             IJwtService jwtService,
-            INotification notification,
-            IMailService mailService) : base(notification, mailService)
+            IMailService mailService
+        ) : base(notification)
         {
             _userRepository = userRepository;
             _personRepository = personRepository;
             _tokenRepository = tokenRepository;
             _jwtService = jwtService;
+            _mailService = mailService;
         }
         
         #region CreateUserAsync
@@ -47,7 +53,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse> CreateUserAdminAsync(UserAdminRequest request, Guid userId)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIdAsync(userId);
+            var user = await _userRepository.GetByIDAsync(userId);
             if (user == null || user.Roll != UserRoll.Admnistrator) throw new ForbiddenException();
 
             await InsertAsync(new User(request));
@@ -59,7 +65,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByLoginAsync(request.Login.ToLower());
+            var user = await _userRepository.Get(x => x.Login.ToLower() == request.Login.ToLower()).FirstOrDefaultAsync();
             if (user == null || user.Password != request.Password) throw new WrongCredentialsException();
 
             var tokenRequest = new CreateTokenRequest
@@ -84,7 +90,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse> UpdatePasswordAsync(Guid id, UpdatePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetByIDAsync(id);
             if (user == null || user.Password != request.CurrentPassword) throw new WrongCredentialsException();
 
             user.Password = request.NewPassword;
@@ -95,7 +101,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse> SendTokenEmailAsync(string email)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(email.ToLower()) ?? throw new NotFoundUserException();
+            var user = await _userRepository.Get(x => x.Person!.Email.ToLower() == email.ToLower()).FirstOrDefaultAsync() ?? throw new NotFoundUserException();
 
             var token = GeneratePasswordToken();
             await _tokenRepository.InsertWithSaveChangesAsync(new TokenControl(user.Id, token, true, DateTime.Now.Ticks, DateTime.Now.AddMinutes(30).Ticks));
@@ -111,12 +117,12 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse> VerifyTokenAsync(VerifyTokenRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email.ToLower()) ?? throw new NotFoundUserException();
+            var user = await _userRepository.Get(x => x.Person!.Email == request.Email.ToLower()).FirstOrDefaultAsync() ?? throw new NotFoundUserException();
 
             var token = await _tokenRepository.GetByToken(request.Token);
             if (token == null || token.IdUser != user.Id) throw new InvalidTokenException();
 
-            token.Valid = false;
+            token!.Valid = false;
             await _tokenRepository.UpdateWithSaveChangesAsync(token);
             return new GenericResponse();
         });
@@ -124,7 +130,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse> ChangePasswordAsync(ChangePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email.ToLower()) ?? throw new NotFoundUserException();
+            var user = await _userRepository.Get(x => x.Person!.Email.ToLower() == request.Email.ToLower()).FirstOrDefaultAsync() ?? throw new NotFoundUserException();
 
             return await UpdatePasswordAsync(user.Id, new UpdatePasswordRequest { CurrentPassword = user.Password, NewPassword = request.NewPassword });
         });
@@ -134,7 +140,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse> DeleteUserAsync(Guid id)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIdAsync(id) ?? throw new NotFoundUserException();
+            var user = await _userRepository.GetByIDAsync(id) ?? throw new NotFoundUserException();
 
             await _userRepository.DeleteAsync(user.Id);
             await _personRepository.DeleteAsync(user.IdPerson);
@@ -145,9 +151,9 @@ namespace AirFinder.Application.Users.Services
         #region Private Methods
         private async Task InsertAsync(User item)
         {
-            if (await _userRepository.GetByLoginAsync(item.Login) != null) throw new LoginException();
-            if (await _personRepository.GetByCPFAsync(item.Person!.CPF) != null) throw new CPFException();
-            if (await _personRepository.GetByEmailAsync(item.Person.Email) != null) throw new EmailException();
+            if (await _userRepository.Get(x => x.Login == item.Login).FirstOrDefaultAsync() != null) throw new LoginException();
+            if (await _personRepository.Get(x => x.CPF == item.Person!.CPF).FirstOrDefaultAsync() != null) throw new CPFException();
+            if (await _personRepository.Get(x => x.Email == item.Person!.Email).FirstOrDefaultAsync() != null) throw new EmailException();
 
             await _userRepository.InsertWithSaveChangesAsync(item);
         }

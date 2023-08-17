@@ -21,12 +21,11 @@ namespace AirFinder.Application.Games.Services
         readonly IGameLogRepository _gameLogRepository;
         public GameService(
             INotification notification,
-            IMailService mailService,
             IUserRepository userRepository,
             IGameRepository gameRepository,
             IBattlegroundRepository battlegroundRepository,
             IGameLogRepository gameLogRepository
-        ) : base(notification, mailService) 
+        ) : base(notification) 
         {
             _userRepository = userRepository;
             _gameRepository = gameRepository;

@@ -1,4 +1,5 @@
 ﻿using AirFinder.Application.Email.Services;
+using AirFinder.Domain.Common;
 using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Infra.Utils.Constants;
 using SendGrid.Helpers.Errors.Model;
@@ -8,11 +9,9 @@ namespace AirFinder.Application
     public abstract class BaseService
     {
         protected readonly INotification _notification;
-        protected readonly IMailService _mailService;
-        public BaseService(INotification notification, IMailService mailService)
+        public BaseService(INotification notification)
         {
             _notification = notification;
-            _mailService = mailService;
         }
 
         public async Task<T> ExecuteAsync<T>(Func<Task<T>> action)
@@ -41,7 +40,7 @@ namespace AirFinder.Application
             {
                 _notification.AddNotification(NotificationKeys.InternalError, e.Message, NotificationModel.ENotificationType.InternalServerError);
             }
-            return default;
+            return default!;
         }
     }
 }

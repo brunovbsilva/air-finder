@@ -18,7 +18,6 @@ namespace AirFinder.Application.Tests
     public class BattlegroundServiceTests
     {
         readonly Mock<INotification> _notification;
-        readonly Mock<IMailService> _mailService;
         readonly Mock<IBattlegroundRepository> _battlegroundRepository;
         readonly Mock<IUserRepository> _userRepository;
         readonly Mock<IImgurService> _imgurService;
@@ -27,14 +26,12 @@ namespace AirFinder.Application.Tests
         public BattlegroundServiceTests()
         {
             _notification = new Mock<INotification>();
-            _mailService = new Mock<IMailService>();
             _battlegroundRepository = new Mock<IBattlegroundRepository>();
             _userRepository = new Mock<IUserRepository>();
             _imgurService = new Mock<IImgurService>();
 
             _service = new BattlegroundService(
                 _notification.Object,
-                _mailService.Object,
                 _battlegroundRepository.Object,
                 _userRepository.Object,
                 _imgurService.Object
