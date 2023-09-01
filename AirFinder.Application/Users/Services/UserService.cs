@@ -49,12 +49,11 @@ namespace AirFinder.Application.Users.Services
         });
         #endregion
 
-        #region CreateAnotherUserAsync
+        #region CreateUserAdminAsync
         public async Task<BaseResponse> CreateUserAdminAsync(UserAdminRequest request, Guid userId)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIDAsync(userId);
-            if (user == null || user.Roll != UserRoll.Admnistrator) throw new ForbiddenException();
+            if (await _userRepository.Get(x => x.Id == userId && x.Roll == UserRoll.Admnistrator).FirstOrDefaultAsync() == null) throw new ForbiddenException();
 
             await InsertAsync(new User(request));
             return new GenericResponse();
