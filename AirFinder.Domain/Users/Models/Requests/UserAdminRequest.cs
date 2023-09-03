@@ -5,6 +5,6 @@ namespace AirFinder.Domain.Users.Models.Requests
 {
     public class UserAdminRequest : UserRequest
     {
-        public UserRoll Role { get; set; } = UserRoll.Default;
+        public UserRole Role { get; set; } = UserRole.Default;
     }
 }

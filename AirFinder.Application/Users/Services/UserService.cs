@@ -53,7 +53,7 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse> CreateUserAdminAsync(UserAdminRequest request, Guid userId)
         => await ExecuteAsync(async () =>
         {
-            if (await _userRepository.Get(x => x.Id == userId && x.Roll == UserRoll.Admnistrator).FirstOrDefaultAsync() == null) throw new ForbiddenException();
+            if (!await _userRepository.AnyAsync(x => x.Id == userId && x.Role == UserRole.Admnistrator)) throw new ForbiddenException();
 
             await InsertAsync(new User(request));
             return new GenericResponse();
@@ -64,24 +64,14 @@ namespace AirFinder.Application.Users.Services
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.Get(x => x.Login.ToLower() == request.Login.ToLower()).FirstOrDefaultAsync();
-            if (user == null || user.Password != request.Password) throw new WrongCredentialsException();
+            var user = await _userRepository.Get(x => 
+                x.Login.ToLower() == request.Login.ToLower() &&
+                x.Password == request.Password
+            ).FirstOrDefaultAsync() ?? throw new WrongCredentialsException();
 
-            var tokenRequest = new CreateTokenRequest
-            {
-                Login = user.Login,
-                UserId = user.Id,
-                Name = user.Person!.Name,
-                Scopes = new List<string>
-                {
-                    user.Roll == UserRoll.Admnistrator ? "Adm_Roll" : "User_Roll"
-                }
-            };
+            var tokenRequest = new CreateTokenRequest(user);
 
-            return new LoginResponse
-            {
-                Token = _jwtService.CreateToken(tokenRequest)
-            };
+            return new LoginResponse { Token = _jwtService.CreateToken(tokenRequest) };
         });
         #endregion
 

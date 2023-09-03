@@ -10,6 +10,7 @@ using AirFinder.Domain.Tokens;
 using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Enums;
 using AirFinder.Domain.Users.Models.Requests;
+using AirFinder.Domain.Users.Models.Responses;
 using AirFinder.Infra.Security;
 using AirFinder.Infra.Utils.Constants;
 using Azure;
@@ -122,6 +123,42 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region LoginAsync
+        [Fact]
+        public async Task LoginAsync_ShouldLogin()
+        {
+            // Arrange
+            var request = new LoginRequest();
+
+            var userListMock = new EnumerableQuery<User>(new List<User> { new User() { Person = new Person() } }).BuildMock();
+            _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(userListMock);
+
+            // Act
+            var result = await _service.LoginAsync(request);
+
+            // Assert
+            Assert.IsType<LoginResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+
+        [Fact]
+        public async Task LoginAsync_Exception()
+        {
+            // Arrange
+            var request = new LoginRequest();
+
+            var userEmptyListMock = new EnumerableQuery<User>(new List<User>()).BuildMock();
+            _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(userEmptyListMock);
+
+            // Act
+            var result = await _service.LoginAsync(request);
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region UpdatePasswordAsync
@@ -148,14 +185,15 @@ namespace AirFinder.Application.Tests
             var personEmptyListMock = new EnumerableQuery<Person>(new List<Person>()).BuildMock();
 
             if(admin)
-                _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
-                    .Returns(userExeption == CreateUserException.ForbiddenException ? userEmptyListMock : userListMock);
-
-            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                .ReturnsAsync(userExeption == CreateUserException.LoginException ? true : false);
+                _userRepository.SetupSequence(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
+                    .ReturnsAsync(userExeption != CreateUserException.ForbiddenException)
+                    .ReturnsAsync(userExeption == CreateUserException.LoginException);
+            else
+                _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
+                    .ReturnsAsync(userExeption == CreateUserException.LoginException);
             _personRepository.SetupSequence(x => x.AnyAsync(It.IsAny<Expression<Func<Person, bool>>>()))
-                .ReturnsAsync(userExeption == CreateUserException.CPFException ? true : false)
-                .ReturnsAsync(userExeption == CreateUserException.EmailException ? true : false);
+                .ReturnsAsync(userExeption == CreateUserException.CPFException)
+                .ReturnsAsync(userExeption == CreateUserException.EmailException);
         }
         #endregion
     }

@@ -47,7 +47,7 @@ namespace AirFinder.Infra.Data.Repository
                     MaxPlayers = g.MaxPlayers,
                     Players = players,
                     ImageUrl = bgd.ImageUrl,
-                    Verified = usd.Roll == UserRoll.Admnistrator || usd.Roll == UserRoll.ContentCreator,
+                    Verified = usd.Role == UserRole.Admnistrator || usd.Role == UserRole.ContentCreator,
                     CanDelete = g.IdCreator == userId,
                     GamePaymentStatus = gld.PaymentDate != null ? GamePaymentStatus.Paid : gld != null ? GamePaymentStatus.Joined : GamePaymentStatus.NotJoined
                 })

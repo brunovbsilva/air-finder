@@ -1,6 +1,6 @@
 ﻿namespace AirFinder.Domain.Users.Enums
 {
-    public enum UserRoll
+    public enum UserRole
     {
         Admnistrator = 0,
         ContentCreator = 1,
