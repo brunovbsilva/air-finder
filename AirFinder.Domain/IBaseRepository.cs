@@ -25,5 +25,7 @@ namespace AirFinder.Domain
         void Update(TEntity entity);
 
         Task SaveChangesAsync();
+
+        Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression);
     }
 }

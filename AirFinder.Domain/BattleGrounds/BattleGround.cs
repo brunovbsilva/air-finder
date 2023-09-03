@@ -17,7 +17,16 @@ namespace AirFinder.Domain.Battlegrounds
             State = state;
             Country = country;
             IdCreator = idCreator;
-            Creator = null;
+        }
+        public Battleground(CreateBattlegroundRequest request)
+        {
+            Name = request.Name; 
+            CEP = request.CEP;
+            Address = request.Address;
+            Number = request.Number;
+            City = request.City;
+            State = request.State;
+            Country = request.Country;
         }
         public Battleground() { }
         public string Name { get; set; } = String.Empty;
@@ -29,18 +38,27 @@ namespace AirFinder.Domain.Battlegrounds
         public string State { get; set; } = String.Empty;
         public string Country { get; set; } = String.Empty;
         public Guid IdCreator { get; set; }
-        public virtual User? Creator { get; set; }
+        public virtual User? Creator { get; set; } = null;
 
         public void Update(UpdateBattlegroundRequest request)
         {
             Name = request.Name;
-            ImageUrl = request.ImageUrl;
             CEP = request.CEP;
             Address = request.Address;
             Number = request.Number;
             City = request.City;
             State = request.State;
             Country = request.Country;
+        }
+
+        public void SetImage(string imageUrl)
+        {
+            ImageUrl = imageUrl;
+        }
+
+        public void SetCreator(Guid idCreator)
+        {
+            IdCreator = idCreator;
         }
     }
 }

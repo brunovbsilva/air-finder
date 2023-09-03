@@ -60,7 +60,7 @@ namespace AirFinder.Application.Users.Services
         });
         #endregion
 
-        #region Login
+        #region LoginAsync
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
         => await ExecuteAsync(async () =>
         {
@@ -85,7 +85,7 @@ namespace AirFinder.Application.Users.Services
         });
         #endregion
 
-        #region Update Password
+        #region UpdatePassword
         public async Task<BaseResponse> UpdatePasswordAsync(Guid id, UpdatePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
@@ -134,8 +134,8 @@ namespace AirFinder.Application.Users.Services
             return await UpdatePasswordAsync(user.Id, new UpdatePasswordRequest { CurrentPassword = user.Password, NewPassword = request.NewPassword });
         });
         #endregion
-        
-        #region Delete
+
+        #region DeleteUserAsync
         public async Task<BaseResponse> DeleteUserAsync(Guid id)
         => await ExecuteAsync(async () =>
         {
@@ -150,9 +150,9 @@ namespace AirFinder.Application.Users.Services
         #region Private Methods
         private async Task InsertAsync(User item)
         {
-            if (await _userRepository.Get(x => x.Login == item.Login).FirstOrDefaultAsync() != null) throw new LoginException();
-            if (await _personRepository.Get(x => x.CPF == item.Person!.CPF).FirstOrDefaultAsync() != null) throw new CPFException();
-            if (await _personRepository.Get(x => x.Email == item.Person!.Email).FirstOrDefaultAsync() != null) throw new EmailException();
+            if (await _userRepository.AnyAsync(x => x.Login == item.Login)) throw new LoginException();
+            if (await _personRepository.AnyAsync(x => x.CPF == item.Person!.CPF)) throw new CPFException();
+            if (await _personRepository.AnyAsync(x => x.Email == item.Person!.Email)) throw new EmailException();
 
             await _userRepository.InsertWithSaveChangesAsync(item);
         }

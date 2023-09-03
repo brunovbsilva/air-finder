@@ -69,5 +69,10 @@ namespace AirFinder.Infra.Data
         {
             await _unitOfWork.SaveChangesAsync();
         }
+
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression)
+        {
+            return await GetAll().AnyAsync(expression);
+        }
     }
 }

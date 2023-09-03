@@ -6,5 +6,6 @@
         LoginException = 1,
         CPFException = 2,
         EmailException = 3,
+        ForbiddenException = 4,
     }
 }

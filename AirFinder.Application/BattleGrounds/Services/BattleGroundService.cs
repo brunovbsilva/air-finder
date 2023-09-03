@@ -31,8 +31,10 @@ namespace AirFinder.Application.Battlegrounds.Services
         }
         public async Task<BaseResponse> CreateBattleground(Guid userId, CreateBattlegroundRequest request) => await ExecuteAsync(
             async () => {
-                UploadResponse imgurResponse = await _imgurService.Upload(request.ImageBase64);
-                var battleground = new Battleground(request.Name, imgurResponse!.Data.Link, request.CEP, request.Address, request.Number, request.City, request.State, request.Country, userId);
+                var battleground = new Battleground(request);
+                battleground.SetCreator(userId);
+                if (!string.IsNullOrEmpty(request.ImageBase64)) battleground.SetImage((await _imgurService.Upload(request.ImageBase64)).Data.Link);
+
                 await _battlegroundRepository.InsertWithSaveChangesAsync(battleground);
                 return new GenericResponse();
             }
@@ -61,6 +63,7 @@ namespace AirFinder.Application.Battlegrounds.Services
                 if (battleground.IdCreator != userId) throw new MethodNotAllowedException();
 
                 battleground.Update(request);
+                if (!string.IsNullOrEmpty(request.ImageBase64)) battleground.SetImage((await _imgurService.Upload(request.ImageBase64)).Data.Link);
 
                 await _battlegroundRepository.UpdateWithSaveChangesAsync(battleground);
                 return new GenericResponse(); 
