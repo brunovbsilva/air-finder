@@ -79,8 +79,10 @@ namespace AirFinder.Application.Users.Services
         public async Task<BaseResponse> UpdatePasswordAsync(Guid id, UpdatePasswordRequest request)
         => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIDAsync(id);
-            if (user == null || user.Password != request.CurrentPassword) throw new WrongCredentialsException();
+            var user = await _userRepository.Get(x => 
+                x.Id == id && 
+                x.Password == request.CurrentPassword
+            ).FirstOrDefaultAsync() ?? throw new WrongCredentialsException();
 
             user.Password = request.NewPassword;
             await _userRepository.UpdateWithSaveChangesAsync(user);

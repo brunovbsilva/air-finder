@@ -162,6 +162,42 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region UpdatePasswordAsync
+        [Fact]
+        public async Task UpdatePasswordAsync_ShouldUpdate()
+        {
+            // Arrange
+            var request = new UpdatePasswordRequest();
+
+            var userListMock = new EnumerableQuery<User>(new List<User> { new User() { Person = new Person() } }).BuildMock();
+            _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(userListMock);
+
+            // Act
+            var result = await _service.UpdatePasswordAsync(It.IsAny<Guid>(), request);
+
+            // Assert
+            Assert.IsType<GenericResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+
+        [Fact]
+        public async Task UpdatePasswordAsync_Exception()
+        {
+            // Arrange
+            var request = new UpdatePasswordRequest();
+
+            var userEmptyListMock = new EnumerableQuery<User>(new List<User>()).BuildMock();
+            _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(userEmptyListMock);
+
+            // Act
+            var result = await _service.UpdatePasswordAsync(It.IsAny<Guid>(), request);
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region SendTokenEmailAsync
