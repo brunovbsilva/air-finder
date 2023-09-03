@@ -201,6 +201,38 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region SendTokenEmailAsync
+        [Fact]
+        public async Task SendTokenEmailAsync_ShouldSend()
+        {
+            // Arrange
+            var userListMock = new EnumerableQuery<User>(new List<User> { new User() { Person = new Person() } }).BuildMock();
+            _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(userListMock);
+
+            // Act
+            var result = await _service.SendTokenEmailAsync(It.IsAny<string>());
+
+            // Assert
+            Assert.IsType<GenericResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+
+        [Fact]
+        public async Task SendTokenEmailAsync_Exception()
+        {
+            // Arrange
+            var userEmptyListMock = new EnumerableQuery<User>(new List<User>()).BuildMock();
+            _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(userEmptyListMock);
+
+            // Act
+            var result = await _service.SendTokenEmailAsync(It.IsAny<string>());
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region VerifyTokenAsync
