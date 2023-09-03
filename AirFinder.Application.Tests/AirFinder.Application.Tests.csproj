@@ -26,10 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Constants\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AirFinder.Application\AirFinder.Application.csproj" />
     <ProjectReference Include="..\AirFinder.Domain\AirFinder.Domain.csproj" />
   </ItemGroup>

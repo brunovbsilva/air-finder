@@ -1,20 +1,16 @@
 ﻿using AirFinder.Application.Email.Services;
 using AirFinder.Application.Tests.Configuration;
 using AirFinder.Application.Tests.Enums;
+using AirFinder.Application.Tests.Mocks;
 using AirFinder.Application.Users.Services;
 using AirFinder.Domain.Common;
 using AirFinder.Domain.People;
-using AirFinder.Domain.People.Enums;
 using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Domain.Tokens;
 using AirFinder.Domain.Users;
-using AirFinder.Domain.Users.Enums;
 using AirFinder.Domain.Users.Models.Requests;
 using AirFinder.Domain.Users.Models.Responses;
 using AirFinder.Infra.Security;
-using AirFinder.Infra.Utils.Constants;
-using Azure;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace AirFinder.Application.Tests
@@ -129,9 +125,8 @@ namespace AirFinder.Application.Tests
             // Arrange
             var request = new LoginRequest();
 
-            var userListMock = new EnumerableQuery<User>(new List<User> { new User() { Person = new Person() } }).BuildMock();
             _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
-                .Returns(userListMock);
+                .Returns(UserMocks.UserDefaultEnumerable().BuildMock());
 
             // Act
             var result = await _service.LoginAsync(request);
@@ -148,9 +143,8 @@ namespace AirFinder.Application.Tests
             // Arrange
             var request = new LoginRequest();
 
-            var userEmptyListMock = new EnumerableQuery<User>(new List<User>()).BuildMock();
             _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
-                .Returns(userEmptyListMock);
+                .Returns(UserMocks.UserDefaultEmptyEnumerable().BuildMock());
 
             // Act
             var result = await _service.LoginAsync(request);
@@ -168,9 +162,8 @@ namespace AirFinder.Application.Tests
             // Arrange
             var request = new UpdatePasswordRequest();
 
-            var userListMock = new EnumerableQuery<User>(new List<User> { new User() { Person = new Person() } }).BuildMock();
             _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
-                .Returns(userListMock);
+                .Returns(UserMocks.UserDefaultEnumerable().BuildMock());
 
             // Act
             var result = await _service.UpdatePasswordAsync(It.IsAny<Guid>(), request);
@@ -187,9 +180,8 @@ namespace AirFinder.Application.Tests
             // Arrange
             var request = new UpdatePasswordRequest();
 
-            var userEmptyListMock = new EnumerableQuery<User>(new List<User>()).BuildMock();
             _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
-                .Returns(userEmptyListMock);
+                .Returns(UserMocks.UserDefaultEmptyEnumerable().BuildMock());
 
             // Act
             var result = await _service.UpdatePasswordAsync(It.IsAny<Guid>(), request);
@@ -205,9 +197,8 @@ namespace AirFinder.Application.Tests
         public async Task SendTokenEmailAsync_ShouldSend()
         {
             // Arrange
-            var userListMock = new EnumerableQuery<User>(new List<User> { new User() { Person = new Person() } }).BuildMock();
             _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
-                .Returns(userListMock);
+                .Returns(UserMocks.UserDefaultEnumerable().BuildMock());
 
             // Act
             var result = await _service.SendTokenEmailAsync(It.IsAny<string>());
@@ -222,9 +213,8 @@ namespace AirFinder.Application.Tests
         public async Task SendTokenEmailAsync_Exception()
         {
             // Arrange
-            var userEmptyListMock = new EnumerableQuery<User>(new List<User>()).BuildMock();
             _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
-                .Returns(userEmptyListMock);
+                .Returns(UserMocks.UserDefaultEmptyEnumerable().BuildMock());
 
             // Act
             var result = await _service.SendTokenEmailAsync(It.IsAny<string>());
@@ -236,6 +226,55 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region VerifyTokenAsync
+        [Fact]
+        public async Task VerifyTokenAsync_ShouldVerify()
+        {
+            // Arrange
+            var request = new VerifyTokenRequest();
+            var userListMock = UserMocks.UserDefaultEnumerable().BuildMock();
+            var tokenControlMock = new TokenControl() { IdUser = userListMock.FirstOrDefault()!.Id };
+
+            _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(userListMock);
+            _tokenRepository.Setup(x => x.GetByToken(It.IsAny<string>()))
+                .ReturnsAsync(tokenControlMock);
+
+            // Act
+            var result = await _service.VerifyTokenAsync(request);
+
+            // Assert
+            Assert.IsType<GenericResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+        [Theory]
+        [InlineData(VerifyTokenException.UserException)]
+        [InlineData(VerifyTokenException.TokenException)]
+        [InlineData(VerifyTokenException.InvalidTokenException)]
+        public async Task VerifyTokenAsync_Exception(VerifyTokenException exception)
+        {
+            // Arrange
+            var request = new VerifyTokenRequest();
+            var userListMock = exception == VerifyTokenException.UserException ?
+                UserMocks.UserDefaultEmptyEnumerable().BuildMock() :
+                UserMocks.UserDefaultEnumerable().BuildMock();
+            var tokenControlMock = TokenControlMocks.TokenControlDefault();
+
+            if(exception == VerifyTokenException.InvalidTokenException) tokenControlMock.IdUser = Guid.NewGuid();
+
+            _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(userListMock);
+            if(exception != VerifyTokenException.TokenException)
+                _tokenRepository.Setup(x => x.GetByToken(It.IsAny<string>()))
+                    .ReturnsAsync(tokenControlMock);
+
+            // Act
+            var result = await _service.VerifyTokenAsync(request);
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region ChangePasswordAsync
@@ -247,11 +286,6 @@ namespace AirFinder.Application.Tests
         #region Private Methods
         private void CreateUserSetup(CreateUserException userExeption, bool admin = false)
         {
-            var userListMock = new EnumerableQuery<User>(new List<User> { new User() }).BuildMock();
-            var personListMock = new EnumerableQuery<Person>(new List<Person> { new Person() }).BuildMock();
-            var userEmptyListMock = new EnumerableQuery<User>(new List<User>()).BuildMock();
-            var personEmptyListMock = new EnumerableQuery<Person>(new List<Person>()).BuildMock();
-
             if(admin)
                 _userRepository.SetupSequence(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
                     .ReturnsAsync(userExeption != CreateUserException.ForbiddenException)
