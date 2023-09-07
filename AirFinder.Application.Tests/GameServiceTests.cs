@@ -215,11 +215,12 @@ namespace AirFinder.Application.Tests
         public async Task JoinGameAsync_ShouldJoin()
         {
             // Arrange
+            var request = new JoinGameRequest();
             _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
             _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
 
             // Act
-            var result = await _service.JoinGame(It.IsAny<Guid>(), It.IsAny<Guid>());
+            var result = await _service.JoinGame(request, It.IsAny<Guid>());
 
             // Assert
             Assert.IsType<GenericResponse>(result);
@@ -232,13 +233,14 @@ namespace AirFinder.Application.Tests
         public async Task JoinGameAsync_Exception(GameException exception)
         {
             // Arrange
+            var request = new JoinGameRequest();
             _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
                 .ReturnsAsync(exception != GameException.NotFoundUserException);
             _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>()))
                 .ReturnsAsync(exception != GameException.NotFoundGameException);
 
             // Act
-            var result = await _service.JoinGame(It.IsAny<Guid>(), It.IsAny<Guid>());
+            var result = await _service.JoinGame(request, It.IsAny<Guid>());
 
             // Assert
             Assert.Null(result);
@@ -296,12 +298,16 @@ namespace AirFinder.Application.Tests
         {
             // Arrange
             var gameLog = GameLogMocks.DefaultEnumerable();
+            var request = new PayGameRequest()
+            {
+                GameId = gameLog.FirstOrDefault()!.GameId
+            };
             _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
             _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
             _gameLogRepository.Setup(x => x.GetAll()).Returns(gameLog.BuildMock());
 
             // Act
-            var result = await _service.PayGame(gameLog.FirstOrDefault()!.GameId, gameLog.FirstOrDefault()!.UserId);
+            var result = await _service.PayGame(request, gameLog.FirstOrDefault()!.UserId);
 
             // Assert
             Assert.IsType<GenericResponse>(result);
@@ -315,18 +321,20 @@ namespace AirFinder.Application.Tests
         public async Task PayGameAsync_Exception(GameException exception)
         {
             // Arrange
+            var gameLog = exception == GameException.NotFoundGameLogException ? GameLogMocks.DefaultEmptyEnumerable() :
+                GameLogMocks.DefaultEnumerable();
+            var request = new PayGameRequest()
+            {
+                GameId = gameLog.FirstOrDefault()?.GameId ?? It.IsAny<Guid>()
+            };
             _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
                 .ReturnsAsync(exception != GameException.NotFoundUserException);
             _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>()))
                 .ReturnsAsync(exception != GameException.NotFoundGameException);
-            _gameLogRepository.Setup(x => x.GetAll()).Returns(
-                exception == GameException.NotFoundGameLogException ?
-                GameLogMocks.DefaultEmptyEnumerable().BuildMock() :
-                GameLogMocks.DefaultEnumerable().BuildMock()
-            );
+            _gameLogRepository.Setup(x => x.GetAll()).Returns(gameLog.BuildMock());
 
             // Act
-            var result = await _service.PayGame(It.IsAny<Guid>(), It.IsAny<Guid>());
+            var result = await _service.PayGame(request, It.IsAny<Guid>());
 
             // Assert
             Assert.Null(result);

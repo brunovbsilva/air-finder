@@ -9,9 +9,11 @@ using AirFinder.Domain.Games.Models.Responses;
 using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Infra.Data.Repository
 {
+    [ExcludeFromCodeCoverage]
     public class GameRepository : BaseRepository<Game>, IGameRepository
     {
         readonly IUnitOfWork _unitOfWork;

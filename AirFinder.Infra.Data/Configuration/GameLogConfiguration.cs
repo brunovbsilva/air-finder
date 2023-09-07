@@ -1,9 +1,11 @@
 ﻿using AirFinder.Domain.GameLogs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Infra.Data.Configuration
 {
+    [ExcludeFromCodeCoverage]
     public class GameLogConfiguration : IEntityTypeConfiguration<GameLog>
     {
         public void Configure(EntityTypeBuilder<GameLog> builder)

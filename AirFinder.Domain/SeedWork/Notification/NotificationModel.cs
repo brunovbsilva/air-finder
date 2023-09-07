@@ -15,12 +15,6 @@
             NotificationType = notificationType;
         }
 
-        public void UpdateMessage(string message, string key)
-        {
-            Message = message;
-            Key = key;
-        }
-
         public enum ENotificationType : byte
         {
             Default = 0,

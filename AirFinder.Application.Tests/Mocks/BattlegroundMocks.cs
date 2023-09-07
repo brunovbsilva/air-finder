@@ -23,13 +23,5 @@ namespace AirFinder.Application.Tests.Mocks
                 Creator = user
             };
         }
-        public static IEnumerable<Battleground> DefaultEnumerable()
-        {
-            return new EnumerableQuery<Battleground>(new List<Battleground> { Default() });
-        }
-        public static IEnumerable<Battleground> DefaultEmptyEnumerable()
-        {
-            return new EnumerableQuery<Battleground>(new List<Battleground>());
-        }
     }
 }

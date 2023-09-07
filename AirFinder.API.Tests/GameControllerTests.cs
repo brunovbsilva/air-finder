@@ -191,9 +191,9 @@ namespace AirFinder.API.Tests
         public async Task JoinGame_ShouldReturnOk()
         {
             // Arrange
-            var request = Guid.NewGuid();
+            var request = new JoinGameRequest();
             var response = new GenericResponse();
-            _gameService.Setup(x => x.JoinGame(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(response);
+            _gameService.Setup(x => x.JoinGame(It.IsAny<JoinGameRequest>(), It.IsAny<Guid>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.JoinGame(request);
@@ -207,7 +207,7 @@ namespace AirFinder.API.Tests
         public async Task JoinGame_Errors(ENotificationType notificationType)
         {
             // Arrange
-            var request = Guid.NewGuid();
+            var request = new JoinGameRequest();
             _configuration.SetupNotification(notificationType);
 
             // Act
@@ -255,9 +255,9 @@ namespace AirFinder.API.Tests
         public async Task PayGame_ShouldReturnOk()
         {
             // Arrange
-            var request = Guid.NewGuid();
+            var request = new PayGameRequest();
             var response = new GenericResponse();
-            _gameService.Setup(x => x.PayGame(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(response);
+            _gameService.Setup(x => x.PayGame(It.IsAny<PayGameRequest>(), It.IsAny<Guid>())).ReturnsAsync(response);
 
             // Act
             var result = await _controller.PayGame(request);
@@ -271,7 +271,7 @@ namespace AirFinder.API.Tests
         public async Task PayGame_Errors(ENotificationType notificationType)
         {
             // Arrange
-            var request = Guid.NewGuid();
+            var request = new PayGameRequest();
             _configuration.SetupNotification(notificationType);
 
             // Act

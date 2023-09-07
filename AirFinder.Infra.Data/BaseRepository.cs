@@ -1,9 +1,11 @@
 ﻿using AirFinder.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace AirFinder.Infra.Data
 {
+    [ExcludeFromCodeCoverage]
     public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
     {
         readonly IUnitOfWork _unitOfWork;

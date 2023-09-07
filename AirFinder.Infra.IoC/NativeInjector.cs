@@ -18,9 +18,11 @@ using AirFinder.Infra.Utils.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Infra.IoC
 {
+    [ExcludeFromCodeCoverage]
     public static class NativeInjector
     {
         public static void AddLocalHttpClients(this IServiceCollection services, IConfiguration configuration)

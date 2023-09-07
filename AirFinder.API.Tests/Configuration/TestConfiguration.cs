@@ -35,9 +35,6 @@ namespace AirFinder.API.Tests.Configuration
         {
             switch (notificationType)
             {
-                case ENotificationType.NotFound:
-                    Assert.IsType<NotFoundObjectResult>(result);
-                    break;
                 case ENotificationType.BadRequestError:
                     Assert.IsType<BadRequestObjectResult>(result);
                     break;

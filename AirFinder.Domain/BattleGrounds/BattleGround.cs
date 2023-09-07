@@ -28,7 +28,6 @@ namespace AirFinder.Domain.Battlegrounds
             State = request.State;
             Country = request.Country;
         }
-        public Battleground() { }
         public string Name { get; set; } = String.Empty;
         public string ImageUrl { get; set; } = String.Empty;
         public string CEP { get; set; } = String.Empty;

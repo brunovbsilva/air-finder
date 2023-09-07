@@ -1,8 +1,10 @@
 ﻿using AirFinder.Infra.Data.Configuration;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Infra.Data
 {
+    [ExcludeFromCodeCoverage]
     public class Context : DbContext
     {
         public Context(DbContextOptions<Context> options) : base(options) { }

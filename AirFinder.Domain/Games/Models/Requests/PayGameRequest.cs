@@ -2,6 +2,6 @@
 {
     public class PayGameRequest
     {
-        Guid GameId { get; set; }
+        public Guid GameId { get; set; }
     }
 }

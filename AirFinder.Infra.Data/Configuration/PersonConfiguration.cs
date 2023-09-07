@@ -1,9 +1,11 @@
 ﻿using AirFinder.Domain.People;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Infra.Data.Configuration
 {
+    [ExcludeFromCodeCoverage]
     public class PersonConfiguration : IEntityTypeConfiguration<Person>
     {
         public void Configure(EntityTypeBuilder<Person> builder)

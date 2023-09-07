@@ -81,11 +81,11 @@ namespace AirFinder.Application.Games.Services
         #endregion
 
         #region JoinGame
-        public async Task<BaseResponse> JoinGame(Guid gameId, Guid userId) => await ExecuteAsync(async () => 
+        public async Task<BaseResponse> JoinGame(JoinGameRequest request, Guid userId) => await ExecuteAsync(async () => 
         {
             if (!await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
-            if (!await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
-            var gameLog = new GameLog(gameId, userId);
+            if (!await _gameRepository.AnyAsync(x => x.Id == request.GameId && x.IdCreator == userId)) throw new NotFoundGameException();
+            var gameLog = new GameLog(request.GameId, userId);
             await _gameLogRepository.InsertWithSaveChangesAsync(gameLog);
             return new GenericResponse();
         });
@@ -104,11 +104,11 @@ namespace AirFinder.Application.Games.Services
         #endregion
 
         #region PayGame
-        public async Task<BaseResponse> PayGame(Guid gameId, Guid userId) => await ExecuteAsync(async () =>
+        public async Task<BaseResponse> PayGame(PayGameRequest request, Guid userId) => await ExecuteAsync(async () =>
         {
             if (!await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
-            if (!await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
-            var gameLog = await _gameLogRepository.GetAll().Where(x => x.GameId == gameId && x.UserId == userId).FirstOrDefaultAsync() ?? throw new NotFoundGameLogException();
+            if (!await _gameRepository.AnyAsync(x => x.Id == request.GameId && x.IdCreator == userId)) throw new NotFoundGameException();
+            var gameLog = await _gameLogRepository.GetAll().Where(x => x.GameId == request.GameId && x.UserId == userId).FirstOrDefaultAsync() ?? throw new NotFoundGameLogException();
             
             gameLog.PaymentDate = DateTime.Now.Ticks;
             await _gameLogRepository.UpdateWithSaveChangesAsync(gameLog);

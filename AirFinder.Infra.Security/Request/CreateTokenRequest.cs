@@ -1,8 +1,10 @@
 ﻿using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Enums;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Infra.Security.Request
 {
+    [ExcludeFromCodeCoverage]
     public class CreateTokenRequest
     {
         public CreateTokenRequest(User user)

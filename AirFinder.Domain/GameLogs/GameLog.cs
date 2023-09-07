@@ -15,7 +15,6 @@ namespace AirFinder.Domain.GameLogs
             Game = null;
             User = null;
         }
-        public GameLog() { }
         public Guid GameId { get; set; }
         public Guid UserId { get; set; }
         public long JoinDate { get; set; } = 0;

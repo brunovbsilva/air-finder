@@ -19,13 +19,5 @@ namespace AirFinder.Application.Tests.Mocks
                 Id = It.IsAny<Guid>()
             };
         }
-        public static IEnumerable<Person> DefaultEnumerable()
-        {
-            return new EnumerableQuery<Person>( new List<Person> { Default() } );
-        }
-        public static IEnumerable<Person> DefaultEmptyEnumerable()
-        {
-            return new EnumerableQuery<Person>( new List<Person>() );
-        }
     }
 }

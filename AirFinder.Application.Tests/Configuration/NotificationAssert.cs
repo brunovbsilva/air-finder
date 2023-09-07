@@ -5,13 +5,6 @@ namespace AirFinder.Application.Tests.Configuration
 {
     public class NotificationAssert
     {
-        public static void NotFoundNotification(Mock<INotification> _notification)
-        {
-            _notification.Verify(x =>
-                x.AddNotification(NotificationKeys.NotFound, It.IsAny<string>(), NotificationModel.ENotificationType.NotFound),
-                Times.Once
-            );
-        }
         public static void BadRequestNotification(Mock<INotification> _notification)
         {
             _notification.Verify(x =>
@@ -30,13 +23,6 @@ namespace AirFinder.Application.Tests.Configuration
         {
             _notification.Verify(x =>
                 x.AddNotification(NotificationKeys.MethodNotAllowed, It.IsAny<string>(), NotificationModel.ENotificationType.NotAllowed),
-                Times.Once
-            );
-        }
-        public static void InternalErrorNotification(Mock<INotification> _notification)
-        {
-            _notification.Verify(x =>
-                x.AddNotification(NotificationKeys.InternalError, It.IsAny<string>(), NotificationModel.ENotificationType.InternalServerError),
                 Times.Once
             );
         }

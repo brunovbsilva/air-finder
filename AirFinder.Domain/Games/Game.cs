@@ -31,7 +31,6 @@ namespace AirFinder.Domain.Games
             IdBattleground = request.IdBattleground;
             IdCreator = idCreator;
         }
-        public Game() {}
         public string Name { get; set; } = String.Empty;
         public string Description { get; set; } = String.Empty;
         public long MillisDateFrom { get; set; } = 0;

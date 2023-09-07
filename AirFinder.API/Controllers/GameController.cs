@@ -63,8 +63,8 @@ namespace AirFinder.API.Controllers
         [SwaggerOperation(Summary = "Join a game")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> JoinGame([FromRoute] Guid id) { 
-            return Response(await _gameService.JoinGame(id, GetUserId(HttpContext))); 
+        public async Task<IActionResult> JoinGame([FromRoute] JoinGameRequest request) { 
+            return Response(await _gameService.JoinGame(request, GetUserId(HttpContext))); 
         }
 
         [HttpDelete("leave/{id}")]
@@ -79,8 +79,8 @@ namespace AirFinder.API.Controllers
         [SwaggerOperation(Summary = "Pay a game")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PayGame([FromRoute] Guid id) { 
-            return Response(await _gameService.PayGame(id, GetUserId(HttpContext))); 
+        public async Task<IActionResult> PayGame([FromRoute] PayGameRequest request) { 
+            return Response(await _gameService.PayGame(request, GetUserId(HttpContext))); 
         }
 
         [HttpPost("validate")]

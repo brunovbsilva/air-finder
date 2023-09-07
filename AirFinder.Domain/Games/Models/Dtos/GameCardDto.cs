@@ -1,7 +1,9 @@
 ﻿using AirFinder.Domain.Games.Models.Enums;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Domain.Games.Models.Dtos
 {
+    [ExcludeFromCodeCoverage]
     public class GameCardDto
     {
         public Guid Id { get; set; }

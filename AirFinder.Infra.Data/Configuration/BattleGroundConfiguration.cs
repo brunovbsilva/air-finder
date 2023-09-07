@@ -1,9 +1,11 @@
 ﻿using AirFinder.Domain.Battlegrounds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Infra.Data.Configuration
 {
+    [ExcludeFromCodeCoverage]
     public class BattlegroundConfiguration : IEntityTypeConfiguration<Battleground>
     {
         public void Configure(EntityTypeBuilder<Battleground> builder)

@@ -1,4 +1,4 @@
-﻿using AirFinder.Domain.Tokens;
+﻿ using AirFinder.Domain.Tokens;
 
 namespace AirFinder.Application.Tests.Mocks
 {
@@ -16,14 +16,6 @@ namespace AirFinder.Application.Tests.Mocks
             {
                 Id = It.IsAny<Guid>(),
             };
-        }
-        public static IEnumerable<TokenControl> DefaultEnumerable()
-        {
-            return new EnumerableQuery<TokenControl>( new List<TokenControl> { Default() } );
-        }
-        public static IEnumerable<TokenControl> DefaultEmptyEnumerable()
-        {
-            return new EnumerableQuery<TokenControl>( new List<TokenControl>() );
         }
     }
 }

@@ -1,5 +1,8 @@
-﻿namespace AirFinder.Infra.Data
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace AirFinder.Infra.Data
 {
+    [ExcludeFromCodeCoverage]
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         public Context Context { get; set; }
