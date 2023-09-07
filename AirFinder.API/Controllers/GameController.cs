@@ -47,7 +47,6 @@ namespace AirFinder.API.Controllers
         [SwaggerOperation(Summary = "Update a game")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status405MethodNotAllowed)]
         public async Task<IActionResult> UpdateGame([FromBody] UpdateGameRequest request) { 
             return Response(await _gameService.UpdateGame(request, GetUserId(HttpContext))); 
         }
@@ -56,7 +55,6 @@ namespace AirFinder.API.Controllers
         [SwaggerOperation(Summary = "Delete a game")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status405MethodNotAllowed)]
         public async Task<IActionResult> DeleteGame([FromRoute] Guid id) { 
             return Response(await _gameService.DeleteGame(id, GetUserId(HttpContext))); 
         }
@@ -65,7 +63,6 @@ namespace AirFinder.API.Controllers
         [SwaggerOperation(Summary = "Join a game")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status405MethodNotAllowed)]
         public async Task<IActionResult> JoinGame([FromRoute] Guid id) { 
             return Response(await _gameService.JoinGame(id, GetUserId(HttpContext))); 
         }
@@ -74,7 +71,6 @@ namespace AirFinder.API.Controllers
         [SwaggerOperation(Summary = "Leave a game")]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status405MethodNotAllowed)]
         public async Task<IActionResult> LeaveGame([FromRoute] Guid id) { 
             return Response(await _gameService.LeaveGame(id, GetUserId(HttpContext))); 
         }

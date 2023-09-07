@@ -36,8 +36,8 @@ namespace AirFinder.Application.Games.Services
         #region CreateGame
         public async Task<BaseResponse> CreateGame(CreateGameRequest request, Guid userId) => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
-            var bg = await _battlegroundRepository.GetByIDAsync(request.IdBattleground) ?? throw new NotFoundBattlegroundException();
+            if(await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if(await _battlegroundRepository.AnyAsync(x => x.Id == request.IdBattleground && x.IdCreator == userId)) throw new NotFoundBattlegroundException();
             await _gameRepository.InsertWithSaveChangesAsync(new Game(request, userId));
             return new GenericResponse();
         });
@@ -46,7 +46,7 @@ namespace AirFinder.Application.Games.Services
         #region ListGames
         public async Task<ListGamesResponse> ListGames(ListGamesRequest request, Guid userId) => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
+            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
             return await _gameRepository.getGameList(request, userId);
         });
         #endregion
@@ -61,8 +61,7 @@ namespace AirFinder.Application.Games.Services
         #region UpdateGame
         public async Task<BaseResponse> UpdateGame(UpdateGameRequest request, Guid userId) => await ExecuteAsync(async () =>
         {
-            var game = await _gameRepository.GetByIDAsync(request.Id) ?? throw new NotFoundGameException();
-            if (game.IdCreator != userId) throw new MethodNotAllowedException();
+            var game = await _gameRepository.Get(x => x.Id == request.Id && x.IdCreator == userId).FirstOrDefaultAsync() ?? throw new NotFoundGameException();
 
             game.Update(request);
 
@@ -72,12 +71,11 @@ namespace AirFinder.Application.Games.Services
         #endregion
 
         #region DeleteGame
-        public async Task<BaseResponse> DeleteGame(Guid id, Guid userId) => await ExecuteAsync(async () => 
+        public async Task<BaseResponse> DeleteGame(Guid gameId, Guid userId) => await ExecuteAsync(async () => 
         {
-            var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
-            var game = await _gameRepository.GetByIDAsync(id) ?? throw new NotFoundGameException();
-            if (game.IdCreator != user.Id) throw new MethodNotAllowedException();
-            await _gameRepository.DeleteAsync(id);
+            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if (await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
+            await _gameRepository.DeleteAsync(gameId);
             return new GenericResponse();
         });
         #endregion
@@ -85,9 +83,8 @@ namespace AirFinder.Application.Games.Services
         #region JoinGame
         public async Task<BaseResponse> JoinGame(Guid gameId, Guid userId) => await ExecuteAsync(async () => 
         {
-            var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
-            var game = await _gameRepository.GetByIDAsync(gameId) ?? throw new NotFoundGameException();
-            if (game.IdCreator == user.Id) throw new MethodNotAllowedException();
+            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if (await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
             var gameLog = new GameLog(gameId, userId);
             await _gameLogRepository.InsertWithSaveChangesAsync(gameLog);
             return new GenericResponse();
@@ -97,10 +94,9 @@ namespace AirFinder.Application.Games.Services
         #region LeaveGame
         public async Task<BaseResponse> LeaveGame(Guid gameId, Guid userId) => await ExecuteAsync(async () => 
         {
-            var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
-            var game = await _gameRepository.GetByIDAsync(gameId) ?? throw new NotFoundGameException();
-            if (game.IdCreator == user.Id) throw new MethodNotAllowedException();
-            var gameLog = await _gameLogRepository.GetAll().Where(x => x.GameId == game.Id && x.UserId == user.Id).FirstOrDefaultAsync() ?? throw new NotFoundGameLogException();
+            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if (await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
+            var gameLog = await _gameLogRepository.GetAll().Where(x => x.GameId == gameId && x.UserId == userId).FirstOrDefaultAsync() ?? throw new NotFoundGameLogException();
             
             await _gameLogRepository.DeleteAsync(gameLog);
             return new GenericResponse();
@@ -110,8 +106,8 @@ namespace AirFinder.Application.Games.Services
         #region PayGame
         public async Task<BaseResponse> PayGame(Guid gameId, Guid userId) => await ExecuteAsync(async () =>
         {
-            var user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
-            var game = await _gameRepository.GetByIDAsync(gameId) ?? throw new NotFoundGameException();
+            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if (await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
             var gameLog = await _gameLogRepository.GetAll().Where(x => x.GameId == gameId && x.UserId == userId).FirstOrDefaultAsync() ?? throw new NotFoundGameLogException();
             
             gameLog.PaymentDate = DateTime.Now.Ticks;
@@ -123,9 +119,8 @@ namespace AirFinder.Application.Games.Services
         #region ValidateGameJoin
         public async Task<BaseResponse> ValidateGameJoin(ValidateGameJoinRequest request, Guid userId) => await ExecuteAsync(async () => 
         {
-            var user = await _userRepository.GetByIDAsync(request.UserId) ?? throw new NotFoundUserException();
-            var game = await _gameRepository.GetByIDAsync(request.GameId) ?? throw new NotFoundGameException();
-            if (game.IdCreator != userId) throw new MethodNotAllowedException();
+            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if (await _gameRepository.AnyAsync(x => x.Id == request.GameId && x.IdCreator == userId)) throw new NotFoundGameException();
             var gameLog = await _gameLogRepository.GetAll().Where(x => x.GameId == request.GameId && x.UserId == request.UserId).FirstOrDefaultAsync() ?? throw new NotFoundGameLogException();
             if (gameLog.PaymentDate == null) throw new MethodNotAllowedException();
 
