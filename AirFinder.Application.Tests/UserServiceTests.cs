@@ -315,6 +315,31 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region DeleteUserAsync
+        [Fact]
+        public async Task DeleteUserAsync_ShouldDelete()
+        {
+            // Arrange
+            _userRepository.Setup(x => x.GetByIDAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(UserMocks.UserDefault());
+
+            // Act
+            var result = await _service.DeleteUserAsync(It.IsAny<Guid>());
+
+            // Assert
+            Assert.IsType<GenericResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+        [Fact]
+        public async Task DeleteUserAsync_Exception()
+        {
+            // Act
+            var result = await _service.DeleteUserAsync(It.IsAny<Guid>());
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region Private Methods
