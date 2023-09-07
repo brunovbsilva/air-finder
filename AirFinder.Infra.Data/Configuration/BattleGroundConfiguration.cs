@@ -1,15 +1,16 @@
-﻿using AirFinder.Domain.BattleGrounds;
-using AirFinder.Domain.People;
+﻿using AirFinder.Domain.Battlegrounds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Infra.Data.Configuration
 {
-    public class BattleGroundConfiguration : IEntityTypeConfiguration<BattleGround>
+    [ExcludeFromCodeCoverage]
+    public class BattlegroundConfiguration : IEntityTypeConfiguration<Battleground>
     {
-        public void Configure(EntityTypeBuilder<BattleGround> builder)
+        public void Configure(EntityTypeBuilder<Battleground> builder)
         {
-            builder.ToTable("BattleGrounds");
+            builder.ToTable("Battlegrounds");
 
             builder.HasKey(e => e.Id);
             builder.Property(e => e.Id).HasColumnName("Id").HasColumnType("uniqueidentifier").HasDefaultValueSql("newid()").IsRequired();

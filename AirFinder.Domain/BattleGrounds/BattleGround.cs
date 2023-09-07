@@ -1,11 +1,12 @@
-﻿using AirFinder.Domain.Common;
+﻿using AirFinder.Domain.Battlegrounds.Models.Requests;
+using AirFinder.Domain.Common;
 using AirFinder.Domain.Users;
 
-namespace AirFinder.Domain.BattleGrounds
+namespace AirFinder.Domain.Battlegrounds
 {
-    public class BattleGround : BaseModel
+    public class Battleground : BaseModel
     {
-        public BattleGround(string name, string imageUrl, string cep, string address, int number, string city, string state, string country, Guid idCreator)
+        public Battleground(string name, string imageUrl, string cep, string address, int number, string city, string state, string country, Guid idCreator)
         {
             Name = name;
             ImageUrl = imageUrl;
@@ -16,9 +17,17 @@ namespace AirFinder.Domain.BattleGrounds
             State = state;
             Country = country;
             IdCreator = idCreator;
-            Creator = null;
         }
-        public BattleGround() { }
+        public Battleground(CreateBattlegroundRequest request)
+        {
+            Name = request.Name; 
+            CEP = request.CEP;
+            Address = request.Address;
+            Number = request.Number;
+            City = request.City;
+            State = request.State;
+            Country = request.Country;
+        }
         public string Name { get; set; } = String.Empty;
         public string ImageUrl { get; set; } = String.Empty;
         public string CEP { get; set; } = String.Empty;
@@ -28,6 +37,27 @@ namespace AirFinder.Domain.BattleGrounds
         public string State { get; set; } = String.Empty;
         public string Country { get; set; } = String.Empty;
         public Guid IdCreator { get; set; }
-        public virtual User? Creator { get; set; }
+        public virtual User? Creator { get; set; } = null;
+
+        public void Update(UpdateBattlegroundRequest request)
+        {
+            Name = request.Name;
+            CEP = request.CEP;
+            Address = request.Address;
+            Number = request.Number;
+            City = request.City;
+            State = request.State;
+            Country = request.Country;
+        }
+
+        public void SetImage(string imageUrl)
+        {
+            ImageUrl = imageUrl;
+        }
+
+        public void SetCreator(Guid idCreator)
+        {
+            IdCreator = idCreator;
+        }
     }
 }

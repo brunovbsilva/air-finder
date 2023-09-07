@@ -4,6 +4,6 @@ namespace AirFinder.Application.Imgur.Services
 {
     public interface IImgurService
     {
-        Task<UploadResponse?> Upload(string request);
+        Task<UploadResponse> Upload(string request);
     }
 }

@@ -1,9 +1,11 @@
 ﻿using AirFinder.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace AirFinder.Infra.Data
 {
+    [ExcludeFromCodeCoverage]
     public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
     {
         readonly IUnitOfWork _unitOfWork;
@@ -68,6 +70,11 @@ namespace AirFinder.Infra.Data
         public async Task SaveChangesAsync()
         {
             await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression)
+        {
+            return await GetAll().AnyAsync(expression);
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿namespace AirFinder.Domain.BattleGrounds.Models.Requests
+﻿namespace AirFinder.Domain.Battlegrounds.Models.Requests
 {
-    public class CreateBattleGroundRequest
+    public class CreateBattlegroundRequest
     {
         public string Name { get; set; } = String.Empty;
-        public string ImageBase64 { get; set; } = String.Empty;
+        public string? ImageBase64 { get; set; }
         public string CEP { get; set; } = String.Empty;
         public string Address { get; set; } = String.Empty;
         public int Number { get; set; } = 0;

@@ -3,11 +3,13 @@ using AirFinder.Infra.Security.Request;
 using AirFinder.Infra.Utils.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace AirFinder.Infra.Security
 {
+    [ExcludeFromCodeCoverage]
     public class JwtService : IJwtService
     {
         private readonly AppSettings _appSettings;

@@ -17,11 +17,10 @@ namespace AirFinder.API.Controllers
 
         private bool IsValidOperation() => !_notification.HasNotification;
 
-        protected new IActionResult Response(BaseResponse? response)
+        protected new IActionResult Response(BaseResponse response)
         {
             if (IsValidOperation())
             {
-                if (response == null) return NoContent();
                 return Ok(response);
             }
 

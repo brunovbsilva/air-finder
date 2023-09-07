@@ -1,9 +1,9 @@
-﻿using AirFinder.Application.BattleGrounds.Services;
+﻿using AirFinder.Application.Battlegrounds.Services;
 using AirFinder.Application.Email.Services;
 using AirFinder.Application.Games.Services;
 using AirFinder.Application.Imgur.Services;
 using AirFinder.Application.Users.Services;
-using AirFinder.Domain.BattleGrounds;
+using AirFinder.Domain.Battlegrounds;
 using AirFinder.Domain.GameLogs;
 using AirFinder.Domain.Games;
 using AirFinder.Domain.People;
@@ -18,9 +18,11 @@ using AirFinder.Infra.Utils.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Infra.IoC
 {
+    [ExcludeFromCodeCoverage]
     public static class NativeInjector
     {
         public static void AddLocalHttpClients(this IServiceCollection services, IConfiguration configuration)
@@ -42,7 +44,7 @@ namespace AirFinder.Infra.IoC
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IGameService, GameService>();
-            services.AddScoped<IBattleGroundService, BattleGroundService>();
+            services.AddScoped<IBattlegroundService, BattlegroundService>();
             #endregion
 
             #region Repository
@@ -50,7 +52,7 @@ namespace AirFinder.Infra.IoC
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITokenRepository, TokenRepository>();
             services.AddScoped<IGameRepository, GameRepository>();
-            services.AddScoped<IBattleGroundRepository, BattleGroundRepository>();
+            services.AddScoped<IBattlegroundRepository, BattlegroundRepository>();
             services.AddScoped<IGameLogRepository, GameLogRepository>();
             #endregion
         }

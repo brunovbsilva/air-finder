@@ -1,14 +1,14 @@
-﻿using AirFinder.Domain.BattleGrounds.Models.Requests;
-using AirFinder.Domain.BattleGrounds.Models.Responses;
+﻿using AirFinder.Domain.Battlegrounds.Models.Requests;
+using AirFinder.Domain.Battlegrounds.Models.Responses;
 using AirFinder.Domain.Common;
 
-namespace AirFinder.Application.BattleGrounds.Services
+namespace AirFinder.Application.Battlegrounds.Services
 {
-    public interface IBattleGroundService
+    public interface IBattlegroundService
     {
-        Task<BaseResponse?> CreateBattleGround(Guid id, CreateBattleGroundRequest request);
-        Task<GetBattleGroundResponse?> GetBattleGrounds(Guid id);
-        Task<BaseResponse?> DeleteBattleGround(Guid id);
-        Task<BaseResponse?> UpdateBattleGround(Guid id, UpdateBattleGroundRequest request);
+        Task<GetBattlegroundsResponse> GetBattlegrounds(Guid userId);
+        Task<BaseResponse> CreateBattleground(Guid userId, CreateBattlegroundRequest request);
+        Task<BaseResponse> DeleteBattleground(Guid userId, Guid id);
+        Task<BaseResponse> UpdateBattleground(Guid userId, Guid id, UpdateBattlegroundRequest request);
     }
 }

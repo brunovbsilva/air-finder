@@ -1,9 +1,11 @@
 ﻿using AirFinder.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Infra.Data.Configuration
 {
+    [ExcludeFromCodeCoverage]
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
@@ -15,7 +17,7 @@ namespace AirFinder.Infra.Data.Configuration
             builder.Property(e => e.Login).HasColumnName("Login").HasColumnType("varchar(20)").IsRequired();
             builder.Property(e => e.Password).HasColumnName("Password").HasColumnType("varchar(20)").IsRequired();
             builder.Property(e => e.IdPerson).HasColumnName("IdPerson").HasColumnType("uniqueidentifier").IsRequired();
-            builder.Property(e => e.Roll).HasColumnName("Roll").HasColumnType("int").IsRequired();
+            builder.Property(e => e.Role).HasColumnName("Role").HasColumnType("int").IsRequired();
 
             builder.HasOne(e => e.Person)
                 .WithMany()

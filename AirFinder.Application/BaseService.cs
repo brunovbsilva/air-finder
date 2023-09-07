@@ -1,5 +1,7 @@
 ﻿using AirFinder.Application.Email.Services;
+using AirFinder.Domain.Common;
 using AirFinder.Domain.SeedWork.Notification;
+using AirFinder.Infra.Utils.Constants;
 using SendGrid.Helpers.Errors.Model;
 
 namespace AirFinder.Application
@@ -7,14 +9,12 @@ namespace AirFinder.Application
     public abstract class BaseService
     {
         protected readonly INotification _notification;
-        protected readonly IMailService _mailService;
-        public BaseService(INotification notification, IMailService mailService)
+        public BaseService(INotification notification)
         {
             _notification = notification;
-            _mailService = mailService;
         }
 
-        public async Task<T?> ExecuteAsync<T>(Func<Task<T>> action)
+        public async Task<T> ExecuteAsync<T>(Func<Task<T>> action)
         {
             try
             {
@@ -22,25 +22,25 @@ namespace AirFinder.Application
             }
             catch (NotFoundException e)
             {
-                _notification.AddNotification("Not Found", e.Message, NotificationModel.ENotificationType.NotFound);
+                _notification.AddNotification(NotificationKeys.NotFound, e.Message, NotificationModel.ENotificationType.NotFound);
             }
             catch (ArgumentException e)
             {
-                _notification.AddNotification("Invalid Property", e.Message, NotificationModel.ENotificationType.BadRequestError);
+                _notification.AddNotification(NotificationKeys.InvalidProperty, e.Message, NotificationModel.ENotificationType.BadRequestError);
             }
             catch (ForbiddenException e)
             {
-                _notification.AddNotification("Forbidden", e.Message, NotificationModel.ENotificationType.Forbidden);
+                _notification.AddNotification(NotificationKeys.Forbidden, e.Message, NotificationModel.ENotificationType.Forbidden);
             }
             catch (MethodNotAllowedException e)
             {
-                _notification.AddNotification("Method Not Allowed", e.Message, NotificationModel.ENotificationType.NotAllowed);
+                _notification.AddNotification(NotificationKeys.MethodNotAllowed, e.Message, NotificationModel.ENotificationType.NotAllowed);
             }
             catch (Exception e)
             {
-                _notification.AddNotification("Internal Error", e.Message, NotificationModel.ENotificationType.InternalServerError);
+                _notification.AddNotification(NotificationKeys.InternalError, e.Message, NotificationModel.ENotificationType.InternalServerError);
             }
-            return default;
+            return default!;
         }
     }
 }

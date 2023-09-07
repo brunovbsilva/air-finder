@@ -1,9 +1,9 @@
 ﻿using AirFinder.Infra.Utils.Configuration;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.API.HealthCheck
 {
+    [ExcludeFromCodeCoverage]
     public static class HealthCheckBuilder
     {
         public static IHealthChecksBuilder AddHealthCheckServices(this IServiceCollection services, IConfiguration configuration)

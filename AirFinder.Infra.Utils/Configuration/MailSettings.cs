@@ -1,5 +1,8 @@
-﻿namespace AirFinder.Infra.Utils.Configuration
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace AirFinder.Infra.Utils.Configuration
 {
+    [ExcludeFromCodeCoverage]
     public class MailSettings
     {
         public string? Mail { get; set; }

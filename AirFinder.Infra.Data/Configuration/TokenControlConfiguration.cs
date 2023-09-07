@@ -2,9 +2,11 @@
 using AirFinder.Domain.Tokens;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AirFinder.Infra.Data.Configuration
 {
+    [ExcludeFromCodeCoverage]
     public class TokenControlConfiguration : IEntityTypeConfiguration<TokenControl>
     {
         public void Configure(EntityTypeBuilder<TokenControl> builder)

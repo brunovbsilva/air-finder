@@ -14,7 +14,6 @@ namespace AirFinder.Domain.People
             Gender= gender;
             Phone= phone;
         }
-        public Person() {}
         public string Name { get; set; } = String.Empty;
         public string Email { get; set; } = String.Empty;
         public DateTime Birthday { get; set; }
