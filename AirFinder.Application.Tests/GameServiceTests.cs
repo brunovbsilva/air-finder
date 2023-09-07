@@ -210,6 +210,39 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region JoinGame
+        [Fact]
+        public async Task JoinGameAsync_ShouldJoin()
+        {
+            // Arrange
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
+            _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
+
+            // Act
+            var result = await _service.JoinGame(It.IsAny<Guid>(), It.IsAny<Guid>());
+
+            // Assert
+            Assert.IsType<GenericResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+        [Theory]
+        [InlineData(GameException.NotFoundUserException)]
+        [InlineData(GameException.NotFoundGameException)]
+        public async Task JoinGameAsync_Exception(GameException exception)
+        {
+            // Arrange
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
+                .ReturnsAsync(exception != GameException.NotFoundUserException);
+            _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>()))
+                .ReturnsAsync(exception != GameException.NotFoundGameException);
+
+            // Act
+            var result = await _service.JoinGame(It.IsAny<Guid>(), It.IsAny<Guid>());
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region LeaveGame
