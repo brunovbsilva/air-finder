@@ -142,6 +142,35 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region UpdateGame
+        [Fact]
+        public async Task UpdateGameAsync_ShouldUpdate()
+        {
+            // Arrange
+            var request = new UpdateGameRequest();
+            _gameRepository.Setup(x => x.Get(It.IsAny<Expression<Func<Game, bool>>>())).Returns(GameMocks.DefaultEnumerable().BuildMock());
+
+            // Act
+            var result = await _service.UpdateGame(request, It.IsAny<Guid>());
+
+            // Assert
+            Assert.IsType<GenericResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+        [Fact]
+        public async Task UpdateGameAsync_Exception()
+        {
+            // Arrange
+            var request = new UpdateGameRequest();
+            _gameRepository.Setup(x => x.Get(It.IsAny<Expression<Func<Game, bool>>>())).Returns(GameMocks.DefaultEmptyEnumerable().BuildMock());
+
+            // Act
+            var result = await _service.UpdateGame(request, It.IsAny<Guid>());
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region DeleteGame
