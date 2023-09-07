@@ -6,7 +6,9 @@ using AirFinder.Domain.Battlegrounds;
 using AirFinder.Domain.Common;
 using AirFinder.Domain.GameLogs;
 using AirFinder.Domain.Games;
+using AirFinder.Domain.Games.Models.Dtos;
 using AirFinder.Domain.Games.Models.Requests;
+using AirFinder.Domain.Games.Models.Responses;
 using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Models.Requests;
@@ -80,6 +82,36 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region ListGames
+        [Fact]
+        public async Task ListGamesAsync_ShouldList()
+        {
+            // Arrange
+            var request = new ListGamesRequest();
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
+            _gameRepository.Setup(x => x.getGameList(It.IsAny<ListGamesRequest>(), It.IsAny<Guid>())).ReturnsAsync(new ListGamesResponse());
+
+            // Act
+            var result = await _service.ListGames(request, It.IsAny<Guid>());
+
+            // Assert
+            Assert.IsType<ListGamesResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+        [Fact]
+        public async Task ListGamesAsync_Exception()
+        {
+            // Arrange
+            var request = new ListGamesRequest();
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(false);
+
+            // Act
+            var result = await _service.ListGames(request, It.IsAny<Guid>());
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region GetDetails

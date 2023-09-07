@@ -46,7 +46,7 @@ namespace AirFinder.Application.Games.Services
         #region ListGames
         public async Task<ListGamesResponse> ListGames(ListGamesRequest request, Guid userId) => await ExecuteAsync(async () =>
         {
-            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if (!await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
             return await _gameRepository.getGameList(request, userId);
         });
         #endregion
