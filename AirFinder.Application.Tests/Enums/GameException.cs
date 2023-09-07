@@ -6,5 +6,6 @@
         NotFoundUserException = 1,
         NotFoundBattlegroundException = 2,
         NotFoundGameException = 3,
+        NotFoundGameLogException = 4,
     }
 }

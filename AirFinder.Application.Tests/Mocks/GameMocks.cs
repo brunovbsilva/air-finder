@@ -1,6 +1,4 @@
-﻿using AirFinder.Domain.Battlegrounds;
-using AirFinder.Domain.Games;
-using AirFinder.Domain.Users;
+﻿using AirFinder.Domain.Games;
 
 namespace AirFinder.Application.Tests.Mocks
 {

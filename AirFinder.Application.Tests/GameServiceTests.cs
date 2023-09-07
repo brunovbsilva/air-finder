@@ -12,6 +12,7 @@ using AirFinder.Domain.Games.Models.Responses;
 using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Models.Requests;
+using AirFinder.Infra.Data.Repository;
 using System.Linq.Expressions;
 
 namespace AirFinder.Application.Tests
@@ -246,6 +247,47 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region LeaveGame
+        [Fact]
+        public async Task LeaveGameAsync_ShouldLeave()
+        {
+            // Arrange
+            var gameLog = GameLogMocks.DefaultEnumerable();
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
+            _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
+            _gameLogRepository.Setup(x => x.GetAll()).Returns(gameLog.BuildMock());
+
+            // Act
+            var result = await _service.LeaveGame(gameLog.FirstOrDefault()!.GameId, gameLog.FirstOrDefault()!.UserId);
+
+            // Assert
+            Assert.IsType<GenericResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+        [Theory]
+        [InlineData(GameException.NotFoundUserException)]
+        [InlineData(GameException.NotFoundGameException)]
+        [InlineData(GameException.NotFoundGameLogException)]
+        public async Task LeaveGameAsync_Exception(GameException exception)
+        {
+            // Arrange
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
+                .ReturnsAsync(exception != GameException.NotFoundUserException);
+            _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>()))
+                .ReturnsAsync(exception != GameException.NotFoundGameException);
+            _gameLogRepository.Setup(x => x.GetAll()).Returns(
+                exception == GameException.NotFoundGameLogException ?
+                GameLogMocks.DefaultEmptyEnumerable().BuildMock() :
+                GameLogMocks.DefaultEnumerable().BuildMock()
+            );
+
+            // Act
+            var result = await _service.LeaveGame(It.IsAny<Guid>(), It.IsAny<Guid>());
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region PayGame
