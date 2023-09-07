@@ -50,7 +50,7 @@ namespace AirFinder.Application.Tests
         {
             // Arrange
             var request = new UserRequest();
-            CreateUserSetup(CreateUserException.None);
+            CreateUserSetup(UserException.None);
 
             // Act
             var result = await _service.CreateUserAsync(request);
@@ -62,10 +62,10 @@ namespace AirFinder.Application.Tests
         }
 
         [Theory]
-        [InlineData(CreateUserException.LoginException)]
-        [InlineData(CreateUserException.CPFException)]
-        [InlineData(CreateUserException.EmailException)]
-        public async Task CreateUserAsync_Exceptions(CreateUserException userExeption)
+        [InlineData(UserException.LoginException)]
+        [InlineData(UserException.CPFException)]
+        [InlineData(UserException.EmailException)]
+        public async Task CreateUserAsync_Exceptions(UserException userExeption)
         {
             // Arrange
             var request = new UserRequest();
@@ -86,7 +86,7 @@ namespace AirFinder.Application.Tests
         {
             // Arrange
             var request = new UserAdminRequest();
-            CreateUserSetup(CreateUserException.None, true);
+            CreateUserSetup(UserException.None, true);
 
             // Act
             var result = await _service.CreateUserAdminAsync(request, It.IsAny<Guid>());
@@ -98,11 +98,11 @@ namespace AirFinder.Application.Tests
         }
 
         [Theory]
-        [InlineData(CreateUserException.LoginException)]
-        [InlineData(CreateUserException.CPFException)]
-        [InlineData(CreateUserException.EmailException)]
-        [InlineData(CreateUserException.ForbiddenException)]
-        public async Task CreateUserAdminAsync_Exceptions(CreateUserException userExeption)
+        [InlineData(UserException.LoginException)]
+        [InlineData(UserException.CPFException)]
+        [InlineData(UserException.EmailException)]
+        [InlineData(UserException.ForbiddenException)]
+        public async Task CreateUserAdminAsync_Exceptions(UserException userExeption)
         {
             // Arrange
             var request = new UserAdminRequest();
@@ -113,7 +113,7 @@ namespace AirFinder.Application.Tests
 
             // Assert
             Assert.Null(result);
-            if (userExeption == CreateUserException.ForbiddenException) NotificationAssert.ForbiddenNotification(_notification);
+            if (userExeption == UserException.ForbiddenException) NotificationAssert.ForbiddenNotification(_notification);
             else NotificationAssert.MethodNotAllowedNotification(_notification);
         }
         #endregion
@@ -343,18 +343,18 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region Private Methods
-        private void CreateUserSetup(CreateUserException userExeption, bool admin = false)
+        private void CreateUserSetup(UserException userExeption, bool admin = false)
         {
             if(admin)
                 _userRepository.SetupSequence(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                    .ReturnsAsync(userExeption != CreateUserException.ForbiddenException)
-                    .ReturnsAsync(userExeption == CreateUserException.LoginException);
+                    .ReturnsAsync(userExeption != UserException.ForbiddenException)
+                    .ReturnsAsync(userExeption == UserException.LoginException);
             else
                 _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                    .ReturnsAsync(userExeption == CreateUserException.LoginException);
+                    .ReturnsAsync(userExeption == UserException.LoginException);
             _personRepository.SetupSequence(x => x.AnyAsync(It.IsAny<Expression<Func<Person, bool>>>()))
-                .ReturnsAsync(userExeption == CreateUserException.CPFException)
-                .ReturnsAsync(userExeption == CreateUserException.EmailException);
+                .ReturnsAsync(userExeption == UserException.CPFException)
+                .ReturnsAsync(userExeption == UserException.EmailException);
         }
         #endregion
     }

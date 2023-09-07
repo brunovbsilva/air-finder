@@ -60,17 +60,17 @@ namespace AirFinder.Application.Tests
             Assert.Null(result.Error);
         }
         [Theory]
-        [InlineData(CreateGameException.NotFoundUserException)]
-        [InlineData(CreateGameException.NotFoundBattlegroundException)]
-        public async Task CreateGameAsync_Exception(CreateGameException exception)
+        [InlineData(GameException.NotFoundUserException)]
+        [InlineData(GameException.NotFoundBattlegroundException)]
+        public async Task CreateGameAsync_Exception(GameException exception)
         {
             // Arrange
             var request = new CreateGameRequest();
 
             _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                .ReturnsAsync(exception != CreateGameException.NotFoundUserException);
+                .ReturnsAsync(exception != GameException.NotFoundUserException);
             _battlegroundRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Battleground, bool>>>()))
-                .ReturnsAsync(exception != CreateGameException.NotFoundBattlegroundException);
+                .ReturnsAsync(exception != GameException.NotFoundBattlegroundException);
 
             // Act
             var result = await _service.CreateGame(request, It.IsAny<Guid>());
@@ -174,6 +174,39 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region DeleteGame
+        [Fact]
+        public async Task DeleteGameAsync_ShouldDelete()
+        {
+            // Arrange
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
+            _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
+
+            // Act
+            var result = await _service.DeleteGame(It.IsAny<Guid>(), It.IsAny<Guid>());
+
+            // Assert
+            Assert.IsType<GenericResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+        [Theory]
+        [InlineData(GameException.NotFoundUserException)]
+        [InlineData(GameException.NotFoundGameException)]
+        public async Task DeleteGameAsync_Exception(GameException exception)
+        {
+            // Arrange
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
+                .ReturnsAsync(exception != GameException.NotFoundUserException);
+            _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>()))
+                .ReturnsAsync(exception != GameException.NotFoundGameException);
+
+            // Act
+            var result = await _service.DeleteGame(It.IsAny<Guid>(), It.IsAny<Guid>());
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region JoinGame

@@ -1,6 +1,6 @@
 ﻿namespace AirFinder.Application.Tests.Enums
 {
-    public enum CreateUserException
+    public enum UserException
     {
         None = 0,
         LoginException = 1,

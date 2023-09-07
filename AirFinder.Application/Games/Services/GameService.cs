@@ -73,8 +73,8 @@ namespace AirFinder.Application.Games.Services
         #region DeleteGame
         public async Task<BaseResponse> DeleteGame(Guid gameId, Guid userId) => await ExecuteAsync(async () => 
         {
-            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
-            if (await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
+            if (!await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if (!await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
             await _gameRepository.DeleteAsync(gameId);
             return new GenericResponse();
         });
@@ -83,8 +83,8 @@ namespace AirFinder.Application.Games.Services
         #region JoinGame
         public async Task<BaseResponse> JoinGame(Guid gameId, Guid userId) => await ExecuteAsync(async () => 
         {
-            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
-            if (await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
+            if (!await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if (!await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
             var gameLog = new GameLog(gameId, userId);
             await _gameLogRepository.InsertWithSaveChangesAsync(gameLog);
             return new GenericResponse();
@@ -94,8 +94,8 @@ namespace AirFinder.Application.Games.Services
         #region LeaveGame
         public async Task<BaseResponse> LeaveGame(Guid gameId, Guid userId) => await ExecuteAsync(async () => 
         {
-            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
-            if (await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
+            if (!await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if (!await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
             var gameLog = await _gameLogRepository.GetAll().Where(x => x.GameId == gameId && x.UserId == userId).FirstOrDefaultAsync() ?? throw new NotFoundGameLogException();
             
             await _gameLogRepository.DeleteAsync(gameLog);
@@ -106,8 +106,8 @@ namespace AirFinder.Application.Games.Services
         #region PayGame
         public async Task<BaseResponse> PayGame(Guid gameId, Guid userId) => await ExecuteAsync(async () =>
         {
-            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
-            if (await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
+            if (!await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if (!await _gameRepository.AnyAsync(x => x.Id == gameId && x.IdCreator == userId)) throw new NotFoundGameException();
             var gameLog = await _gameLogRepository.GetAll().Where(x => x.GameId == gameId && x.UserId == userId).FirstOrDefaultAsync() ?? throw new NotFoundGameLogException();
             
             gameLog.PaymentDate = DateTime.Now.Ticks;
@@ -119,8 +119,8 @@ namespace AirFinder.Application.Games.Services
         #region ValidateGameJoin
         public async Task<BaseResponse> ValidateGameJoin(ValidateGameJoinRequest request, Guid userId) => await ExecuteAsync(async () => 
         {
-            if (await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
-            if (await _gameRepository.AnyAsync(x => x.Id == request.GameId && x.IdCreator == userId)) throw new NotFoundGameException();
+            if (!await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if (!await _gameRepository.AnyAsync(x => x.Id == request.GameId && x.IdCreator == userId)) throw new NotFoundGameException();
             var gameLog = await _gameLogRepository.GetAll().Where(x => x.GameId == request.GameId && x.UserId == request.UserId).FirstOrDefaultAsync() ?? throw new NotFoundGameLogException();
             if (gameLog.PaymentDate == null) throw new MethodNotAllowedException();
 
