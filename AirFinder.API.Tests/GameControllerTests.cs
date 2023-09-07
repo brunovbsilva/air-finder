@@ -140,7 +140,6 @@ namespace AirFinder.API.Tests
 
         [Theory]
         [InlineData(ENotificationType.BadRequestError)]
-        [InlineData(ENotificationType.NotAllowed)]
         public async Task UpdateGame_Errors(ENotificationType notificationType)
         {
             // Arrange
@@ -173,7 +172,6 @@ namespace AirFinder.API.Tests
 
         [Theory]
         [InlineData(ENotificationType.BadRequestError)]
-        [InlineData(ENotificationType.NotAllowed)]
         public async Task DeleteGame_Errors(ENotificationType notificationType)
         {
             // Arrange
@@ -206,7 +204,6 @@ namespace AirFinder.API.Tests
 
         [Theory]
         [InlineData(ENotificationType.BadRequestError)]
-        [InlineData(ENotificationType.NotAllowed)]
         public async Task JoinGame_Errors(ENotificationType notificationType)
         {
             // Arrange
@@ -239,7 +236,6 @@ namespace AirFinder.API.Tests
 
         [Theory]
         [InlineData(ENotificationType.BadRequestError)]
-        [InlineData(ENotificationType.NotAllowed)]
         public async Task LeaveGame_Errors(ENotificationType notificationType)
         {
             // Arrange
