@@ -291,9 +291,104 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region PayGame
+        [Fact]
+        public async Task PayGameAsync_ShouldPay()
+        {
+            // Arrange
+            var gameLog = GameLogMocks.DefaultEnumerable();
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
+            _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
+            _gameLogRepository.Setup(x => x.GetAll()).Returns(gameLog.BuildMock());
+
+            // Act
+            var result = await _service.PayGame(gameLog.FirstOrDefault()!.GameId, gameLog.FirstOrDefault()!.UserId);
+
+            // Assert
+            Assert.IsType<GenericResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+        [Theory]
+        [InlineData(GameException.NotFoundUserException)]
+        [InlineData(GameException.NotFoundGameException)]
+        [InlineData(GameException.NotFoundGameLogException)]
+        public async Task PayGameAsync_Exception(GameException exception)
+        {
+            // Arrange
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
+                .ReturnsAsync(exception != GameException.NotFoundUserException);
+            _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>()))
+                .ReturnsAsync(exception != GameException.NotFoundGameException);
+            _gameLogRepository.Setup(x => x.GetAll()).Returns(
+                exception == GameException.NotFoundGameLogException ?
+                GameLogMocks.DefaultEmptyEnumerable().BuildMock() :
+                GameLogMocks.DefaultEnumerable().BuildMock()
+            );
+
+            // Act
+            var result = await _service.PayGame(It.IsAny<Guid>(), It.IsAny<Guid>());
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region ValidateGameJoin
+        [Fact]
+        public async Task ValidateGameJoinAsync_ShouldValidate()
+        {
+            // Arrange
+            var gameLog = GameLogMocks.DefaultPayedEnumerable();
+            var request = new ValidateGameJoinRequest()
+            {
+                GameId = gameLog.FirstOrDefault()!.GameId,
+                UserId = gameLog.FirstOrDefault()!.UserId
+            };
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
+            _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>())).ReturnsAsync(true);
+            _gameLogRepository.Setup(x => x.GetAll()).Returns(gameLog.BuildMock());
+
+            // Act
+            var result = await _service.ValidateGameJoin(request, It.IsAny<Guid>());
+
+            // Assert
+            Assert.IsType<GenericResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+        [Theory]
+        [InlineData(GameException.NotFoundUserException)]
+        [InlineData(GameException.NotFoundGameException)]
+        [InlineData(GameException.NotFoundGameLogException)]
+        [InlineData(GameException.NotPayedException)]
+        public async Task ValidateGameJoinAsync_Exception(GameException exception)
+        {
+            // Arrange
+            var gameLog = exception == GameException.NotFoundGameLogException ? GameLogMocks.DefaultEmptyEnumerable() :
+                exception == GameException.NotPayedException ? GameLogMocks.DefaultEnumerable() :
+                GameLogMocks.DefaultPayedEnumerable();
+            var request = new ValidateGameJoinRequest()
+            {
+                GameId = gameLog.FirstOrDefault()?.GameId ?? It.IsAny<Guid>(),
+                UserId = gameLog.FirstOrDefault()?.UserId ?? It.IsAny<Guid>()
+            };
+            _userRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<User, bool>>>()))
+                .ReturnsAsync(exception != GameException.NotFoundUserException);
+            _gameRepository.Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Game, bool>>>()))
+                .ReturnsAsync(exception != GameException.NotFoundGameException);
+            _gameLogRepository.Setup(x => x.GetAll()).Returns(gameLog.BuildMock());
+
+            // Act
+            var result = await _service.ValidateGameJoin(request, It.IsAny<Guid>());
+
+            // Assert
+            Assert.Null(result);
+            if(exception == GameException.NotPayedException)
+                NotificationAssert.MethodNotAllowedNotification(_notification);
+            else
+                NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
     }
 }

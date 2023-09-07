@@ -22,5 +22,11 @@ namespace AirFinder.Application.Tests.Mocks
         {
             return new EnumerableQuery<GameLog>(new List<GameLog>());
         }
+        public static IEnumerable<GameLog> DefaultPayedEnumerable()
+        {
+            var gameLog = Default();
+            gameLog.PaymentDate = It.IsAny<long>();
+            return new EnumerableQuery<GameLog>(new List<GameLog> { gameLog });
+        }
     }
 }

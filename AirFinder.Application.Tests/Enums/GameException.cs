@@ -7,5 +7,6 @@
         NotFoundBattlegroundException = 2,
         NotFoundGameException = 3,
         NotFoundGameLogException = 4,
+        NotPayedException = 5,
     }
 }
