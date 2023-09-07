@@ -115,6 +115,30 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region GetDetails
+        [Fact]
+        public async Task GetDetailsAsync_ShouldGetDetails()
+        {
+            // Arrange
+            _gameRepository.Setup(x => x.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(GameMocks.Default());
+
+            // Act
+            var result = await _service.GetDetails(It.IsAny<Guid>());
+
+            // Assert
+            Assert.IsType<GetDetailsResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+        [Fact]
+        public async Task GetDetailsAsync_Exception()
+        {
+            // Act
+            var result = await _service.GetDetails(It.IsAny<Guid>());
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region UpdateGame
