@@ -255,15 +255,16 @@ namespace AirFinder.Application.Tests
         {
             // Arrange
             var request = new VerifyTokenRequest();
-            var userListMock = exception == VerifyTokenException.UserException ?
-                UserMocks.UserDefaultEmptyEnumerable().BuildMock() :
-                UserMocks.UserDefaultEnumerable().BuildMock();
             var tokenControlMock = TokenControlMocks.TokenControlDefault();
 
-            if(exception == VerifyTokenException.InvalidTokenException) tokenControlMock.IdUser = Guid.NewGuid();
+            if (exception == VerifyTokenException.InvalidTokenException) tokenControlMock.IdUser = Guid.NewGuid();
 
             _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
-                .Returns(userListMock);
+                .Returns(
+                    exception == VerifyTokenException.UserException ?
+                    UserMocks.UserDefaultEmptyEnumerable().BuildMock() :
+                    UserMocks.UserDefaultEnumerable().BuildMock()
+                );
             if(exception != VerifyTokenException.TokenException)
                 _tokenRepository.Setup(x => x.GetByToken(It.IsAny<string>()))
                     .ReturnsAsync(tokenControlMock);
@@ -278,6 +279,39 @@ namespace AirFinder.Application.Tests
         #endregion
 
         #region ChangePasswordAsync
+        [Fact]
+        public async Task ChangePasswordAsync_ShouldChange()
+        {
+            // Arrange
+            var request = new ChangePasswordRequest();
+
+            _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(UserMocks.UserDefaultEnumerable().BuildMock());
+
+            // Act
+            var result = await _service.ChangePasswordAsync(request);
+
+            // Assert
+            Assert.IsType<GenericResponse>(result);
+            Assert.True(result.Success);
+            Assert.Null(result.Error);
+        }
+        [Fact]
+        public async Task ChangePasswordAsync_Exception()
+        {
+            // Arrange
+            var request = new ChangePasswordRequest();
+
+            _userRepository.Setup(x => x.Get(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(UserMocks.UserDefaultEmptyEnumerable().BuildMock());
+
+            // Act
+            var result = await _service.ChangePasswordAsync(request);
+
+            // Assert
+            Assert.Null(result);
+            NotificationAssert.BadRequestNotification(_notification);
+        }
         #endregion
 
         #region DeleteUserAsync
