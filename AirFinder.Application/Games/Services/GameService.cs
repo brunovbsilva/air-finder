@@ -36,8 +36,8 @@ namespace AirFinder.Application.Games.Services
         #region CreateGame
         public async Task<BaseResponse> CreateGame(CreateGameRequest request, Guid userId) => await ExecuteAsync(async () =>
         {
-            if(await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
-            if(await _battlegroundRepository.AnyAsync(x => x.Id == request.IdBattleground && x.IdCreator == userId)) throw new NotFoundBattlegroundException();
+            if(!await _userRepository.AnyAsync(x => x.Id == userId)) throw new NotFoundUserException();
+            if(!await _battlegroundRepository.AnyAsync(x => x.Id == request.IdBattleground && x.IdCreator == userId)) throw new NotFoundBattlegroundException();
             await _gameRepository.InsertWithSaveChangesAsync(new Game(request, userId));
             return new GenericResponse();
         });

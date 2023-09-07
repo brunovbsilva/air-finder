@@ -5,24 +5,25 @@ namespace AirFinder.Application.Tests.Mocks
 {
     public class PersonMocks
     {
-        public static Person PersonDefault()
+        public static Person Default()
         {
-            return new Person()
+            return new Person(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<string>(),
+                It.IsAny<Gender>(),
+                It.IsAny<string>()
+            )
             {
-                Id = It.IsAny<Guid>(),
-                Name = It.IsAny<string>(),
-                Email = It.IsAny<string>(),
-                Birthday = It.IsAny<DateTime>(),
-                CPF = It.IsAny<string>(),
-                Gender = It.IsAny<Gender>(),
-                Phone = It.IsAny<string>()
+                Id = It.IsAny<Guid>()
             };
         }
-        public static IEnumerable<Person> PersonDefaultEnumerable()
+        public static IEnumerable<Person> DefaultEnumerable()
         {
-            return new EnumerableQuery<Person>( new List<Person> { PersonDefault() } );
+            return new EnumerableQuery<Person>( new List<Person> { Default() } );
         }
-        public static IEnumerable<Person> PersonDefaultEmptyEnumerable()
+        public static IEnumerable<Person> DefaultEmptyEnumerable()
         {
             return new EnumerableQuery<Person>( new List<Person>() );
         }

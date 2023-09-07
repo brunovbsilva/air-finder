@@ -4,22 +4,24 @@ namespace AirFinder.Application.Tests.Mocks
 {
     public class TokenControlMocks
     {
-        public static TokenControl TokenControlDefault()
+        public static TokenControl Default()
         {
-            return new TokenControl()
+            return new TokenControl(
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>(),
+                It.IsAny<long>(),
+                It.IsAny<long>()
+            )
             {
-                IdUser = It.IsAny<Guid>(),
-                Token = It.IsAny<string>(),
-                Valid = It.IsAny<bool>(),
-                SentDate = It.IsAny<long>(),
-                ExpirationDate = It.IsAny<long>()
+                Id = It.IsAny<Guid>(),
             };
         }
-        public static IEnumerable<TokenControl> TokenControlDefaultEnumerable()
+        public static IEnumerable<TokenControl> DefaultEnumerable()
         {
-            return new EnumerableQuery<TokenControl>( new List<TokenControl> { TokenControlDefault() } );
+            return new EnumerableQuery<TokenControl>( new List<TokenControl> { Default() } );
         }
-        public static IEnumerable<TokenControl> TokenControlDefaultEmptyEnumerable()
+        public static IEnumerable<TokenControl> DefaultEmptyEnumerable()
         {
             return new EnumerableQuery<TokenControl>( new List<TokenControl>() );
         }

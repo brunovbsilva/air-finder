@@ -1,28 +1,30 @@
 ﻿using AirFinder.Domain.People;
 using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Enums;
+using System.Data;
 
 namespace AirFinder.Application.Tests.Mocks
 {
     public class UserMocks
     {
-        public static User UserDefault()
+        public static User Default()
         {
-            var person = PersonMocks.PersonDefault();
-            return new User()
+            var person = PersonMocks.Default();
+            return new User(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                person.Id,
+                It.IsAny<UserRole>()
+            )
             {
-                Login = It.IsAny<string>(),
-                Password = It.IsAny<string>(),
-                IdPerson = person.Id,
-                Role = It.IsAny<UserRole>(),
                 Person = person
             };
         }
-        public static IEnumerable<User> UserDefaultEnumerable()
+        public static IEnumerable<User> DefaultEnumerable()
         {
-            return new EnumerableQuery<User>( new List<User> { UserDefault() } );
+            return new EnumerableQuery<User>( new List<User> { Default() } );
         }
-        public static IEnumerable<User> UserDefaultEmptyEnumerable()
+        public static IEnumerable<User> DefaultEmptyEnumerable()
         {
             return new EnumerableQuery<User>(new List<User>());
         }
