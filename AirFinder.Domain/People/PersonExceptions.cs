@@ -10,4 +10,7 @@ namespace AirFinder.Domain.People
 
     public class NotFoundPersonException : ArgumentException
     { public NotFoundPersonException() : base("Person not found") { } }
+
+    public class SearchPeopleException : ArgumentException
+    { public SearchPeopleException() : base("You have to search with at least 3 characters") { } }
 }
