@@ -2,6 +2,7 @@
 using AirFinder.Application.Email.Services;
 using AirFinder.Application.Games.Services;
 using AirFinder.Application.Imgur.Services;
+using AirFinder.Application.People.Services;
 using AirFinder.Application.Users.Services;
 using AirFinder.Domain.Battlegrounds;
 using AirFinder.Domain.GameLogs;
@@ -39,6 +40,7 @@ namespace AirFinder.Infra.IoC
         public static void AddLocalServices(this IServiceCollection services, IConfiguration configuration)
         {
             #region Service
+            services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<INotification, Notification>();
             services.AddScoped<IMailService, MailService>();
             services.AddScoped<IUserService, UserService>();

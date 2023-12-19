@@ -16,6 +16,19 @@ namespace AirFinder.Application.Imgur.Services
         }
         public async Task<UploadResponse> Upload(string base64)
         {
+            if (
+                base64.Contains("data:image/png;base64,") ||
+                base64.Contains("data:image/jpeg;base64,") ||
+                base64.Contains("data:image/jpg;base64,") ||
+                base64.Contains("data:image/gif;base64,")
+            )
+            {
+                base64 = base64.Replace("data:image/png;base64,", "");
+                base64 = base64.Replace("data:image/jpeg;base64,", "");
+                base64 = base64.Replace("data:image/jpg;base64,", "");
+                base64 = base64.Replace("data:image/gif;base64,", "");
+            }
+            else throw new Exception("Invalid image format");
             var content = new StringContent(base64);
             var response = await _httpClient.PostAsync("image", content).ConfigureAwait(false);
             var returned = await response.Content.ReadAsStringAsync();

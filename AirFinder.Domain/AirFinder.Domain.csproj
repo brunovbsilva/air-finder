@@ -17,7 +17,6 @@
     <Folder Include="GameLogs\Models\" />
     <Folder Include="People\Models\Dtos\" />
     <Folder Include="People\Models\Requests\" />
-    <Folder Include="People\Models\Responses\" />
     <Folder Include="Tokens\Models\Dtos\" />
     <Folder Include="Tokens\Models\Requests\" />
     <Folder Include="Tokens\Models\Responses\" />

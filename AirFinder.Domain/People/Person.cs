@@ -22,5 +22,25 @@ namespace AirFinder.Domain.People
         public Gender Gender { get; set; }
         public string Phone { get; set; } = String.Empty;
         public string? ImageUrl { get; set; }
+
+        public void UpdateName(string name)
+        {
+            Name = name;
+        }
+
+        public void UpdateEmail(string email)
+        {
+            Email = email;
+        }
+
+        public void UpdatePhone(string phone)
+        {
+            Phone = phone;
+        }
+
+        public void UpdateImageUrl(string imageUrl)
+        {
+            ImageUrl = imageUrl;
+        }
     }
 }
