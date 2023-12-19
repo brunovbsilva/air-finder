@@ -9,6 +9,7 @@ namespace AirFinder.Domain.Games
 {
     public class Game : BaseModel
     {
+        public Game() { }
         public Game(string name, string description, long millisDateFrom, long millisDateUpTo, int maxPlayers, Guid idBattleground, Guid idCreator)
         {
             Name = name;

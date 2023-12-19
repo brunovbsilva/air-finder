@@ -20,6 +20,7 @@ namespace AirFinder.Infra.Data.Configuration
             builder.Property(e => e.CPF).HasColumnName("CPF").HasColumnType("varchar(11)").IsRequired();
             builder.Property(e => e.Gender).HasColumnName("Gender").HasColumnType("int").IsRequired();
             builder.Property(e => e.Phone).HasColumnName("Phone").HasColumnType("varchar(11)").IsRequired();
+            builder.Property(e => e.ImageUrl).HasColumnName("ImageUrl").HasColumnType("varchar(200)");
         }
     }
 }

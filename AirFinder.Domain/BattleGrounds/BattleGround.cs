@@ -6,6 +6,7 @@ namespace AirFinder.Domain.Battlegrounds
 {
     public class Battleground : BaseModel
     {
+        public Battleground() { }
         public Battleground(string name, string imageUrl, string cep, string address, int number, string city, string state, string country, Guid idCreator)
         {
             Name = name;

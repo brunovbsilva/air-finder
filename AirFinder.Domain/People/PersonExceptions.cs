@@ -7,4 +7,7 @@ namespace AirFinder.Domain.People
 
     public class EmailException : MethodNotAllowedException
     { public EmailException() : base("Email already registered") { } }
+
+    public class NotFoundPersonException : ArgumentException
+    { public NotFoundPersonException() : base("Person not found") { } }
 }

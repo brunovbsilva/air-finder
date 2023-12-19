@@ -5,6 +5,7 @@ namespace AirFinder.Domain.People
 {
     public class Person : BaseModel
     {
+        public Person() { }
         public Person(string name, string email, DateTime birthday, string cpf, Gender gender, string phone) 
         {
             Name= name;
@@ -20,5 +21,6 @@ namespace AirFinder.Domain.People
         public string CPF { get; set; } = String.Empty;
         public Gender Gender { get; set; }
         public string Phone { get; set; } = String.Empty;
+        public string? ImageUrl { get; set; }
     }
 }

@@ -7,6 +7,7 @@ namespace AirFinder.Domain.Users
 {
     public class User : BaseModel
     {
+        public User() { }
         public User(string login, string password, Guid idPerson, UserRole role) 
         {
             Login = login;
@@ -45,8 +46,6 @@ namespace AirFinder.Domain.Users
                 request.Phone
             );
         }
-
-        public User() {}
         public string Login { get; set; } = String.Empty;
         public string Password { get; set; } = String.Empty;
         public Guid IdPerson { get; set; } = new Guid();

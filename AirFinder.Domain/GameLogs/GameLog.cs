@@ -6,6 +6,7 @@ namespace AirFinder.Domain.GameLogs
 {
     public class GameLog : BaseModel
     {
+        public GameLog() { }
         public GameLog(Guid gameId, Guid fromUserId)
         {
             GameId = gameId;
