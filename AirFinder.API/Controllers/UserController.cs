@@ -44,7 +44,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status405MethodNotAllowed)]
         public async Task<IActionResult> CreateAnotherUser([FromBody] UserAdminRequest request)
         {
-            return Response(await _userService.CreateUserAdminAsync(request, GetUserId(HttpContext)));
+            return Response(await _userService.CreateUserAdminAsync(request, GetProfile(HttpContext).UserId));
         }
 
         [Authorize]
@@ -54,7 +54,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete()
         {
-            return Response(await _userService.DeleteUserAsync(GetUserId(HttpContext)));
+            return Response(await _userService.DeleteUserAsync(GetProfile(HttpContext).UserId));
         }
         [Authorize]
         [HttpPut("password")]
@@ -63,7 +63,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromBody] UpdatePasswordRequest request)
         {
-            return Response(await _userService.UpdatePasswordAsync(GetUserId(HttpContext), request));
+            return Response(await _userService.UpdatePasswordAsync(GetProfile(HttpContext).UserId, request));
         }
 
         [HttpPost("Password/token")]

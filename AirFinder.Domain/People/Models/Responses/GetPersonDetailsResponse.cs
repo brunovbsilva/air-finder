@@ -1,29 +1,24 @@
 ﻿using AirFinder.Domain.Common;
+using AirFinder.Domain.People.Models.Dtos;
 
 namespace AirFinder.Domain.People.Models.Responses
 {
     public class GetPersonDetailsResponse : BaseResponse
     {
         public GetPersonDetailsResponse(
+            Guid id,
             string name,
             string email,
             string? imageUrl
         ) 
         {
-            Name = name;
-            Email = email;
-            ImageUrl = imageUrl;
+            Person = new PersonLimited(id, name, email, imageUrl);
         }
 
         public GetPersonDetailsResponse(Person person)
         {
-            Name = person.Name;
-            Email = person.Email;
-            ImageUrl = person.ImageUrl;
+            Person = new PersonLimited(person);
         }
-
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string? ImageUrl { get; set; }
+        public PersonLimited Person { get; set; }
     }
 }

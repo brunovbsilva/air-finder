@@ -1,4 +1,5 @@
-﻿using AirFinder.Domain.Users;
+﻿using AirFinder.Domain.JWTClaims;
+using AirFinder.Domain.Users;
 using AirFinder.Domain.Users.Enums;
 using System.Diagnostics.CodeAnalysis;
 
@@ -9,14 +10,10 @@ namespace AirFinder.Infra.Security.Request
     {
         public CreateTokenRequest(User user)
         {
-            Login = user.Login;
-            UserId = user.Id;
-            Name = user.Person!.Name;
+            Profile = new Profile(user);
             Scopes = new List<string> { user.Role == UserRole.Admnistrator ? "Adm_Role" : "User_Role" };
         }
-        public string Login { get; set; } = String.Empty;
-        public Guid UserId { get; set; }
-        public string Name { get; set; } = String.Empty;
+        public Profile Profile { get; set; }
         public List<string> Scopes { get; set; } = new List<string>();
     }
 }

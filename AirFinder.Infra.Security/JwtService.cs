@@ -1,4 +1,5 @@
-﻿using AirFinder.Infra.Security.Constants;
+﻿using AirFinder.Domain.JWTClaims;
+using AirFinder.Infra.Security.Constants;
 using AirFinder.Infra.Security.Request;
 using AirFinder.Infra.Utils.Configuration;
 using Microsoft.Extensions.Options;
@@ -6,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace AirFinder.Infra.Security
 {
@@ -43,10 +45,13 @@ namespace AirFinder.Infra.Security
         private static ClaimsIdentity GetClaims(CreateTokenRequest request)
         {
             var identity = new ClaimsIdentity("JWT");
+            var serializeOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true
+            };
 
-            identity.AddClaim(new Claim(JwtClaims.CLAIM_LOGIN, request.Login.ToString()));
-            identity.AddClaim(new Claim(JwtClaims.CLAIM_USER_ID, request.UserId.ToString()));
-            identity.AddClaim(new Claim(JwtClaims.CLAIM_USER_NAME, request.Name.ToString()));
+            identity.AddClaim(new Claim(JwtClaims.CAIM_USER_PROFILE, JsonSerializer.Serialize<Profile>(request.Profile, serializeOptions)));
             request.Scopes?.ForEach(scope => identity.AddClaim(new Claim(JwtClaims.CLAIM_SCOPES, scope)));
            
             return identity;

@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Uow;
 using AirFinder.Domain.People;
+using AirFinder.Domain.People.Models.Dtos;
 using AirFinder.Domain.People.Models.Requests;
 using AirFinder.Domain.People.Models.Responses;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,7 @@ namespace AirFinder.Infra.Data.Repository
                 .Take(request.ItemsPerPage)
                 .ToListAsync();
 
-            return new SearchPeopleResponse(peopleList);
+            return new SearchPeopleResponse(peopleList.Select(x => new PersonLimited(x)));
         }
     }
 }

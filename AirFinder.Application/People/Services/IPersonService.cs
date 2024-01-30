@@ -7,7 +7,7 @@ namespace AirFinder.Application.People.Services
     public interface IPersonService
     {
         Task<SearchPeopleResponse> Search(SearchPeopleRequest request);
-        Task<BaseResponse> Update(UpdateProfileRequest request, Guid userId);
+        Task<UpdateProfileResponse> Update(UpdateProfileRequest request, Guid userId);
         Task<GetPersonDetailsResponse> Details(Guid personId);
     }
 }

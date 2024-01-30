@@ -1,8 +1,11 @@
 ﻿using AirFinder.Domain.Common;
+using AirFinder.Domain.JWTClaims;
 using AirFinder.Domain.SeedWork.Notification;
+using AirFinder.Infra.Security.Constants;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Text.Json;
 using static AirFinder.Domain.SeedWork.Notification.NotificationModel;
 
 namespace AirFinder.API.Controllers
@@ -40,13 +43,18 @@ namespace AirFinder.API.Controllers
             };
         }
 
-        protected Guid GetUserId(HttpContext http)
+        protected Profile GetProfile(HttpContext http)
         {
             var token = http.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             var handler = new JwtSecurityTokenHandler();
             var jsonToken = handler.ReadJwtToken(token);
-            Guid.TryParse(jsonToken.Claims.FirstOrDefault(x => x.Type == "userId")!.Value, out Guid result);
-            return result;
+            var serializeOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true
+            };
+            var profile = JsonSerializer.Deserialize<Profile>(jsonToken.Claims.FirstOrDefault(x => x.Type == JwtClaims.CAIM_USER_PROFILE)!.Value, serializeOptions);
+            return profile!;
         }
     }
 }

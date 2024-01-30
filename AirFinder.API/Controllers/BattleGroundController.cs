@@ -25,7 +25,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetBattlegrounds()
         {
-            return Response(await _battlegroundService.GetBattlegrounds(GetUserId(HttpContext)));
+            return Response(await _battlegroundService.GetBattlegrounds(GetProfile(HttpContext).UserId));
         }
 
         [HttpPost]
@@ -33,7 +33,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateBattleground([FromBody] CreateBattlegroundRequest request)
         {
-            return Response(await _battlegroundService.CreateBattleground(GetUserId(HttpContext), request));
+            return Response(await _battlegroundService.CreateBattleground(GetProfile(HttpContext).UserId, request));
         }
 
         [HttpDelete("{id}")]
@@ -43,7 +43,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status405MethodNotAllowed)]
         public async Task<IActionResult> DeleteBattleground(Guid id)
         {
-            return Response(await _battlegroundService.DeleteBattleground(GetUserId(HttpContext), id));
+            return Response(await _battlegroundService.DeleteBattleground(GetProfile(HttpContext).UserId, id));
         }
 
         [HttpPut("{id}")]
@@ -53,7 +53,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status405MethodNotAllowed)]
         public async Task<IActionResult> UpdateBattleground([FromRoute] Guid id, [FromBody] UpdateBattlegroundRequest request)
         {
-            return Response(await _battlegroundService.UpdateBattleground(GetUserId(HttpContext), id, request));
+            return Response(await _battlegroundService.UpdateBattleground(GetProfile(HttpContext).UserId, id, request));
         }
     }
 }

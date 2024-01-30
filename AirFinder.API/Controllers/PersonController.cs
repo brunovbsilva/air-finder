@@ -36,18 +36,18 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status405MethodNotAllowed)]
-        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileRequest request)
         {
-            return Response(await _personService.Update(request, GetUserId(HttpContext)));
+            return Response(await _personService.Update(request, GetProfile(HttpContext).UserId));
         }
 
-        [HttpGet("details/{personId}")]
+        [HttpGet("details")]
         [SwaggerOperation(Summary = "Get details from a person")]
         [ProducesResponseType(typeof(GetPersonDetailsResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Details(Guid personId)
+        public async Task<IActionResult> Details([FromQuery] Guid? personId)
         {
-            return Response(await _personService.Details(personId));
+            return Response(await _personService.Details(personId ?? GetProfile(HttpContext).PersonId));
         }
     }
 }

@@ -5,6 +5,8 @@ using AirFinder.Domain.People.Models.Requests;
 using AirFinder.Domain.People.Models.Responses;
 using AirFinder.Domain.SeedWork.Notification;
 using AirFinder.Domain.Users;
+using AirFinder.Infra.Security;
+using AirFinder.Infra.Security.Request;
 
 namespace AirFinder.Application.People.Services
 {
@@ -13,16 +15,19 @@ namespace AirFinder.Application.People.Services
         readonly IPersonRepository _personRepository;
         readonly IUserRepository _userRepository;
         readonly IImgurService _imgurService;
+        readonly IJwtService _jwtService;
         public PersonService(
             INotification notification,
             IPersonRepository personRepository,
             IUserRepository userRepository,
-            IImgurService imgurService
+            IImgurService imgurService,
+            IJwtService jwtService
         ) : base(notification)
         {
             _personRepository = personRepository;
             _userRepository = userRepository;
             _imgurService = imgurService;
+            _jwtService = jwtService;
         }
 
         public async Task<SearchPeopleResponse> Search(SearchPeopleRequest request)
@@ -37,24 +42,31 @@ namespace AirFinder.Application.People.Services
             return new GetPersonDetailsResponse(person);
         });
 
-        public async Task<BaseResponse> Update(UpdateProfileRequest request, Guid userId)
+        public async Task<UpdateProfileResponse> Update(UpdateProfileRequest request, Guid userId)
         => await ExecuteAsync(async () => {
             if (!request.IsValid()) throw new ArgumentNullException();
 
             User user = await _userRepository.GetByIDAsync(userId) ?? throw new NotFoundUserException();
-            Person person = await _personRepository.GetByIDAsync(user.IdPerson) ?? throw new NotFoundPersonException();
+            if (user.Person == null) throw new NotFoundPersonException();
 
-            if (!String.IsNullOrEmpty(request.Name)) person.UpdateName(request.Name);
+            if (!String.IsNullOrEmpty(request.Name)) user.Person.UpdateName(request.Name);
             if (!String.IsNullOrEmpty(request.Email)) {
                 if (await _personRepository.AnyAsync(x => x.Email == request.Email)) throw new EmailException();
-                person.UpdateEmail(request.Email);
+                user.Person.UpdateEmail(request.Email);
             }
-            if (!String.IsNullOrEmpty(request.Phone)) person.UpdatePhone(request.Phone);
-            if (!String.IsNullOrEmpty(request.Image)) person.UpdateImageUrl((await _imgurService.Upload(request.Image)).Data.Link);
+            if (!String.IsNullOrEmpty(request.Phone)) user.Person.UpdatePhone(request.Phone);
+            if (request.Image != null && request.Image.Length > 0)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    request.Image.CopyTo(ms);
+                    user.Person.UpdateImageUrl((await _imgurService.Upload(Convert.ToBase64String(ms.ToArray()))).Data.Link);
+                }
+            }
 
-            await _personRepository.UpdateWithSaveChangesAsync(person);
+            await _personRepository.UpdateWithSaveChangesAsync(user.Person);
 
-            return new GenericResponse();
+            return new UpdateProfileResponse { Token = _jwtService.CreateToken(new CreateTokenRequest(user)) };
         });
     }
 }

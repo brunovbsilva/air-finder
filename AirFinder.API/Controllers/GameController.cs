@@ -24,7 +24,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateGame([FromBody] CreateGameRequest request) { 
-            return Response(await _gameService.CreateGame(request, GetUserId(HttpContext))); 
+            return Response(await _gameService.CreateGame(request, GetProfile(HttpContext).UserId)); 
         }
 
         [HttpGet]
@@ -32,7 +32,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(ListGamesResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ListGames([FromQuery] ListGamesRequest request) { 
-            return Response(await _gameService.ListGames(request, GetUserId(HttpContext))); 
+            return Response(await _gameService.ListGames(request, GetProfile(HttpContext).UserId)); 
         }
 
         [HttpGet("{id}")]
@@ -48,7 +48,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateGame([FromBody] UpdateGameRequest request) { 
-            return Response(await _gameService.UpdateGame(request, GetUserId(HttpContext))); 
+            return Response(await _gameService.UpdateGame(request, GetProfile(HttpContext).UserId)); 
         }
 
         [HttpDelete("{id}")]
@@ -56,7 +56,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteGame([FromRoute] Guid id) { 
-            return Response(await _gameService.DeleteGame(id, GetUserId(HttpContext))); 
+            return Response(await _gameService.DeleteGame(id, GetProfile(HttpContext).UserId)); 
         }
 
         [HttpPost("join/{id}")]
@@ -64,7 +64,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> JoinGame([FromRoute] JoinGameRequest request) { 
-            return Response(await _gameService.JoinGame(request, GetUserId(HttpContext))); 
+            return Response(await _gameService.JoinGame(request, GetProfile(HttpContext).UserId)); 
         }
 
         [HttpDelete("leave/{id}")]
@@ -72,7 +72,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> LeaveGame([FromRoute] Guid id) { 
-            return Response(await _gameService.LeaveGame(id, GetUserId(HttpContext))); 
+            return Response(await _gameService.LeaveGame(id, GetProfile(HttpContext).UserId)); 
         }
         
         [HttpPost("pay/{id}")]
@@ -80,7 +80,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PayGame([FromRoute] PayGameRequest request) { 
-            return Response(await _gameService.PayGame(request, GetUserId(HttpContext))); 
+            return Response(await _gameService.PayGame(request, GetProfile(HttpContext).UserId)); 
         }
 
         [HttpPost("validate")]
@@ -89,7 +89,7 @@ namespace AirFinder.API.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status405MethodNotAllowed)]
         public async Task<IActionResult> ValidateGameJoin([FromBody] ValidateGameJoinRequest request) { 
-            return Response(await _gameService.ValidateGameJoin(request, GetUserId(HttpContext))); 
+            return Response(await _gameService.ValidateGameJoin(request, GetProfile(HttpContext).UserId)); 
         }
     }
 }
